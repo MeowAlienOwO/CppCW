@@ -18,7 +18,6 @@ Timer::~Timer()
     cout << "-----Destroy Timer-----" << endl;
     if (_texture != NULL)
     {
-
         delete _texture;
     }
     cout << "-----End Destroy Timer-----" << endl;
@@ -80,11 +79,15 @@ void Timer::count()
     currFps = countedFrame / ((currTime - startTime) / 1000.0f);
     //renderFPS();
 }
-
+int Timer::frameNo()
+{
+    return countedFrame;
+}
 double Timer::getFPS()
 {
     return currFps;
 }
+
 void Timer::renderFPS()
 {
     string fpsString;
@@ -107,29 +110,14 @@ void Timer::renderFPS()
     }
         
     _texture = new Texture("font/font.ttf", fpsString, timeColor, 18);
-    SDL_Rect position = { 960 - _texture->getWidth(),
-                            720 - _texture->getHeight(), 
+    SDL_Rect position = { SCREEN_WIDTH - _texture->getWidth() - 20,
+                            SCREEN_HEIGHT - _texture->getHeight() - 20, 
                             _texture->getWidth(), 
                             _texture->getHeight()
                         };
+    //printf("position:(%d,%d,%d,%d)\n", position.x, position.y, position.w, position.h);
     _texture->render(NULL, &position);
     delete _texture;
     _texture = NULL;
-    //cout << "fps string:" << fpsString << endl;
 
-    //SDL_Surface* fpsSurface = TTF_RenderText_Solid(font, fpsString.c_str(), timeColor);
- /*   SDL_Rect position = { 960 - fpsSurface->w,
-        720 - fpsSurface->h,
-        fpsSurface->w,
-        fpsSurface->h };
-    if (fpsSurface == NULL)
-    {
-        cout << "Unable to create fps text data!\nError: " << TTF_GetError() << endl;
-        return;
-    }
-
-    
-    texture = SDL_CreateTextureFromSurface(_renderer, fpsSurface);
-    SDL_RenderCopy(_renderer, texture, NULL, &position);
-  */  //SDL_RenderCopy(_renderer, texture, NULL, NULL);
 }

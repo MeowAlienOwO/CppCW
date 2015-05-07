@@ -1,7 +1,7 @@
 #ifndef TUTORIAL_H
 #define TUTORIAL_H
 
-#include "Main.h"
+#include "Global.h"
 #include "Stage.h"
 #include "Player.h"
 

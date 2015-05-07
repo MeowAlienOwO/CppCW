@@ -1,7 +1,7 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include "Main.h"
+#include "Global.h"
 /* GameObject
  * GameObject.h/cpp define and implement the father class of all game object,
  * like player, enermy, bullet, boss, etc.

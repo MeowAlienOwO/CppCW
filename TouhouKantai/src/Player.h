@@ -1,7 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "Main.h"
+
 #include "GameObject.h"
+#include "Bullet.h"
 /* Player
  * Player.h/cpp represent the player class.
  *  
@@ -12,8 +13,8 @@ typedef enum{
 
 class Player : public GameObject{
 public:
-    int getMark();
-    void setMark(int mark);
+    //int getMark();
+    //void setMark(int mark);
     void move();
     void setDirection(Direction dir);
     void attack();
@@ -27,14 +28,13 @@ public:
     ~Player();
 
 private: 
-    int _mark;
-    //Uint8 _moveState;
+    //int _mark;
+    Uint8 _moveState;
+    SDL_RendererFlip _flip;
     SDL_mutex* _lock;
-    //SDL_Texture* _texture;
     Texture* _texture;
-    //SDL_Rect _heroine[];
     SDL_Rect _panelArea;
-    SDL_Rect _heroine;
     Direction _direction;
+    SDL_Rect _heroine[11];
 };
 #endif

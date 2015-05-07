@@ -9,8 +9,8 @@
 #include "SDL_ttf.h"
 #include <sstream>
 #include <cstdio>
-//#include "Main.h"
 #include "Texture.h"
+#include "Macro.h"
 #define DEFAULT_FPS 60
 
 class Timer{
@@ -22,6 +22,7 @@ public:
     double getFPS();
     void count();
     bool isStopped();
+    int frameNo();
     bool isFrame();
     Timer();
     ~Timer();

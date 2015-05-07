@@ -8,10 +8,22 @@ Player::Player(SDL_Rect panel) : GameObject(panel.x + panel.w /2,
 
     //_texture = loadTexture("img/player00.png");
     _texture = new Texture("img/player00.png");
-    _mark = 0;
+    //_mark = 0;
+    _flip = SDL_FLIP_NONE;
+    _moveState = 0;
     _direction = HERE;
+    // normal pic
+    for (int i = 0; i < 4; i++)
+    {
+        _heroine[i] = { 32 * i, 0, 32, 48 };
+    }
+    // moving pic
+    for (int i = 0; i < 7; i++)
+    {
+        _heroine[i + 4] = { 32 * i, 48, 32, 48 };
+    }
+    // moving pic
     _panelArea = panel;
-    _heroine = { 0, 0, 32, 64 };
     setX(_panelArea.x + _panelArea.w / 2);
     setY(_panelArea.y + _panelArea.h / 2);
     _lock = SDL_CreateMutex();
@@ -40,6 +52,7 @@ void Player::move()
         case LEFT:
             Player::setX(getX() - getSpeed() * 1);
             //GameObject::setX(getX() - getSpeed() * 1);
+
             break;
         case RIGHT:
             Player::setX(getX() + getSpeed() * 1);
@@ -48,12 +61,18 @@ void Player::move()
         case UP:
             Player::setY(getY() - getSpeed() * 1);
             //GameObject::setY(getY() - getSpeed() * 1);
+            if (gTimer->frameNo() % 2 == 0)
+            _moveState = _moveState++ % 3;
             break;
         case DOWN:
             Player::setY(getY() + getSpeed() * 1);
             //GameObject::setY(getY() + getSpeed() * 1);
+            if (gTimer->frameNo() % 2 == 0)
+            _moveState = _moveState++ % 3;
             break;
         default:
+            if (gTimer->frameNo() % 10 == 0)
+            _moveState = _moveState++ % 3;
             break;
         }
 
@@ -62,8 +81,7 @@ void Player::move()
     else{
         cout << "Can't get lock! Error: " << SDL_GetError() << endl;
     }
-       //cout << "move " << _direction << " (" << getX() << "," << getY() << ")" << endl;
-    //setDirection(HERE);
+
     
 }
 
@@ -84,25 +102,8 @@ void Player::spell()
 
 void Player::draw()
 {
-    //if (SDL_LockMutex(_lock) == 0)
-    //{
-        SDL_Rect position = { getX(), getY(), _heroine.w, _heroine.h };
-        //render(_texture, &_heroine, &position);
-        _texture->render(&_heroine, &position);
-    //    SDL_UnlockMutex(_lock);
-    //}
-    //else{
-    //    cout << "Can't get lock! Error: " << SDL_GetError() << endl;
-    //}
-    
-    //printf("position:(%d,%d,%d,%d\n)", position.x, position.y, position.w, position.h);
-    //SDL_RenderCopy(gRenderer, _texture, &_heroine, &position);
-    
-}
-
-int Player::getMark()
-{
-    return _mark;
+    SDL_Rect position = { getX(), getY(), _heroine[_moveState].w, _heroine[_moveState].h };
+    _texture->render(&_heroine[_moveState], &position);
 }
 
 
@@ -117,9 +118,9 @@ void Player::setX(int x)
     {
         GameObject::setX(_panelArea.x);
     }
-    else if (x + _heroine.w > _panelArea.x + _panelArea.w)
+    else if (x + _heroine[0].w > _panelArea.x + _panelArea.w)
     {
-        GameObject::setX(_panelArea.x + _panelArea.w - _heroine.w);
+        GameObject::setX(_panelArea.x + _panelArea.w - _heroine[0].w);
     }
     else
     {
@@ -133,9 +134,9 @@ void Player::setY(int y)
     {
         GameObject::setY(_panelArea.y);
     }
-    else if (y + _heroine.h > _panelArea.y + _panelArea.h)
+    else if (y + _heroine[0].h > _panelArea.y + _panelArea.h)
     {
-        GameObject::setY(_panelArea.y + _panelArea.h - _heroine.h);
+        GameObject::setY(_panelArea.y + _panelArea.h - _heroine[0].h);
     }
     else
     {

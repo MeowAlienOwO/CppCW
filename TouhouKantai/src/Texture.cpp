@@ -14,25 +14,31 @@ Texture::Texture(std::string ttf, std::string str, SDL_Color color, int size)
 {
     
     TTF_Font* font = TTF_OpenFont(ttf.c_str(), size);
-    if (font == NULL)
-    {
         if (font == NULL)
         {
             cout << "font not loaded\nError: " << TTF_GetError() << endl;
             throw new exception("font not loaded");
         }
 
-    }
     SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), color);
+    TTF_CloseFont(font);
+    if (surface == NULL)
+    {
+        cout << "can't create surface!Error: " << SDL_GetError() << endl;
+    }
+    w = surface->w;
+    h = surface->h;
     _texture = SDL_CreateTextureFromSurface(Texture::_renderer, surface);
+
+    SDL_FreeSurface(surface);
 }
 
 Texture::~Texture()
 {
-    cout << "destroy texture" << endl;
+    //cout << "destroy texture" << endl;
     SDL_DestroyTexture(_texture);
 
-    cout << "texture destroyed" << endl;
+    //cout << "texture destroyed" << endl;
 }
 
 
@@ -111,6 +117,7 @@ SDL_Texture* Texture::loadTexture(std::string path)
     {
         cout << "Texture Not Loaded!" << IMG_GetError() << endl;
     }
+    SDL_FreeSurface(surface);
     return texture;
 }
 
