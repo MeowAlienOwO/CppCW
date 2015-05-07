@@ -14,7 +14,15 @@ Texture::Texture(std::string ttf, std::string str, SDL_Color color, int size)
 {
     
     TTF_Font* font = TTF_OpenFont(ttf.c_str(), size);
+    if (font == NULL)
+    {
+        if (font == NULL)
+        {
+            cout << "font not loaded\nError: " << TTF_GetError() << endl;
+            throw new exception("font not loaded");
+        }
 
+    }
     SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), color);
     _texture = SDL_CreateTextureFromSurface(Texture::_renderer, surface);
 }
@@ -32,7 +40,6 @@ void Texture::render(SDL_Rect* src, SDL_Rect* dest)
 {
     if (SDL_LockMutex(Texture::_lock) == 0)
     {
-
         SDL_RenderCopy(_renderer, _texture, src, dest);
         SDL_UnlockMutex(Texture::_lock);
     }
@@ -53,20 +60,30 @@ void Texture::renderEx(SDL_Rect* src, SDL_Rect* dest, double angle, SDL_Point* c
         cout << "Unable to lock! Error:" << SDL_GetError() << endl;
     }
 }
+int Texture::getWidth()
+{
+    return w;
+}
 
+int Texture::getHeight()
+{
+    return h;
+}
 void Texture::setRenderer(SDL_Renderer* renderer)
 {
     Texture::_renderer = renderer;
 }
 
-void Texture::setLock()
+void Texture::setLock(SDL_mutex* lock)
 {
-    Texture::_lock = SDL_CreateMutex();
-    if (_lock == NULL)
-    {
-        cout << "can't create lock in texture! Error: " << SDL_GetError() << endl;
-    }
+    Texture::_lock = lock;
 }
+
+SDL_mutex* Texture::getLock()
+{
+    return Texture::_lock;
+}
+
 
 SDL_Surface* Texture::loadSurface(std::string path)
 {
@@ -81,6 +98,8 @@ SDL_Surface* Texture::loadSurface(std::string path)
         cout << "Image Not Loaded!" << endl;
         return NULL;
     }
+    w = loaded->w;
+    h = loaded->h;
     return loaded;
 }
 

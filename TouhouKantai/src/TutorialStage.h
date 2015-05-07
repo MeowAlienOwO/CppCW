@@ -30,9 +30,9 @@ private:
     void drawPanel();
     void handleKbdEvent();
     void checkUserMove();
-    SDL_Texture* background;
 
-    SDL_Texture* panel;
+    Texture* _background;
+    Texture* _panel;
     
     SDL_Rect panelArea;
     

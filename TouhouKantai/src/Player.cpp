@@ -2,11 +2,12 @@
 
 using namespace std;
 Player::Player(SDL_Rect panel) : GameObject(panel.x + panel.w /2,
-        panel.y + panel.h - 24, 7)
+        panel.y + panel.h - 24, 2)
 {
     cout << "-------Init Player-------" << endl;
 
-    _texture = loadTexture("img/player00.png");
+    //_texture = loadTexture("img/player00.png");
+    _texture = new Texture("img/player00.png");
     _mark = 0;
     _direction = HERE;
     _panelArea = panel;
@@ -23,7 +24,7 @@ Player::~Player()
 {
 
     cout << "-------Destroy Player-------" << endl;
-    SDL_DestroyTexture(_texture);
+    delete _texture;
     cout << "-------End Destroy Player-------" << endl;
 }
 
@@ -83,15 +84,16 @@ void Player::spell()
 
 void Player::draw()
 {
-    if (SDL_LockMutex(_lock) == 0)
-    {
+    //if (SDL_LockMutex(_lock) == 0)
+    //{
         SDL_Rect position = { getX(), getY(), _heroine.w, _heroine.h };
-        render(_texture, &_heroine, &position);
-        SDL_UnlockMutex(_lock);
-    }
-    else{
-        cout << "Can't get lock! Error: " << SDL_GetError() << endl;
-    }
+        //render(_texture, &_heroine, &position);
+        _texture->render(&_heroine, &position);
+    //    SDL_UnlockMutex(_lock);
+    //}
+    //else{
+    //    cout << "Can't get lock! Error: " << SDL_GetError() << endl;
+    //}
     
     //printf("position:(%d,%d,%d,%d\n)", position.x, position.y, position.w, position.h);
     //SDL_RenderCopy(gRenderer, _texture, &_heroine, &position);

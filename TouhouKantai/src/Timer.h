@@ -10,6 +10,7 @@
 #include <sstream>
 #include <cstdio>
 //#include "Main.h"
+#include "Texture.h"
 #define DEFAULT_FPS 60
 
 class Timer{
@@ -22,7 +23,7 @@ public:
     void count();
     bool isStopped();
     bool isFrame();
-    Timer(SDL_Renderer* renderer);
+    Timer();
     ~Timer();
 private:
 
@@ -34,10 +35,8 @@ private:
     bool stoped;
     double currFps;
     SDL_Color timeColor;
-    SDL_Texture* texture;
-    SDL_Renderer* _renderer;
+    Texture* _texture;
     SDL_mutex* _lock;
-    TTF_Font* font;
 };
 
 #endif

@@ -40,10 +40,12 @@ int GameObject::getY()
 {
     return _position.y;
 }
+
 void GameObject::setSpeed(double speed)
 {
     _speed = speed;
 }
+
 double GameObject::getSpeed()
 {
     return _speed;

@@ -30,7 +30,8 @@ private:
     int _mark;
     //Uint8 _moveState;
     SDL_mutex* _lock;
-    SDL_Texture* _texture;
+    //SDL_Texture* _texture;
+    Texture* _texture;
     //SDL_Rect _heroine[];
     SDL_Rect _panelArea;
     SDL_Rect _heroine;

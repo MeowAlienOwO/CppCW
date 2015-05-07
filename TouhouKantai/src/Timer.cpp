@@ -1,30 +1,26 @@
 #include "Timer.h"
 using namespace std;
-Timer::Timer(SDL_Renderer* renderer)
+Timer::Timer()
 {
     cout << "-----Init Timer-----" << endl;
     stop();
-    //frameNum = 1000 / DEFAULT_FPS;
-    frameNum = 17;
+    frameNum = 1000 / DEFAULT_FPS;
+    //frameNum = 17;
     timeColor = { 0xFF, 0xFF, 0xFF, 255 };
     //position = { 200, 200, 128, 36 };
     currFps = 60.0;
-    font = TTF_OpenFont("font/time_font.ttf", 18);
-    //position = { 832, 684, 128, 36 };
-    if (font == NULL)
-    {
-        cout << "font not loaded\nError: " << TTF_GetError() << endl;
-        throw new exception("font not loaded");
-    }
-    _lock = SDL_CreateMutex();
-    _renderer = renderer;
+   _lock = SDL_CreateMutex();
     cout << "-----End Init Timer-----" << endl;
 }
 
 Timer::~Timer()
 {
     cout << "-----Destroy Timer-----" << endl;
-    SDL_DestroyTexture(texture);
+    if (_texture != NULL)
+    {
+
+        delete _texture;
+    }
     cout << "-----End Destroy Timer-----" << endl;
 }
 
@@ -82,7 +78,7 @@ void Timer::count()
     }
     if (currTime % 250 == 0)
     currFps = countedFrame / ((currTime - startTime) / 1000.0f);
-    renderFPS();
+    //renderFPS();
 }
 
 double Timer::getFPS()
@@ -110,11 +106,19 @@ void Timer::renderFPS()
         fpsString.swap(string(fpsString.c_str()));// deal with the string after \0
     }
         
-
+    _texture = new Texture("font/font.ttf", fpsString, timeColor, 18);
+    SDL_Rect position = { 960 - _texture->getWidth(),
+                            720 - _texture->getHeight(), 
+                            _texture->getWidth(), 
+                            _texture->getHeight()
+                        };
+    _texture->render(NULL, &position);
+    delete _texture;
+    _texture = NULL;
     //cout << "fps string:" << fpsString << endl;
 
-    SDL_Surface* fpsSurface = TTF_RenderText_Solid(font, fpsString.c_str(), timeColor);
-    SDL_Rect position = { 960 - fpsSurface->w,
+    //SDL_Surface* fpsSurface = TTF_RenderText_Solid(font, fpsString.c_str(), timeColor);
+ /*   SDL_Rect position = { 960 - fpsSurface->w,
         720 - fpsSurface->h,
         fpsSurface->w,
         fpsSurface->h };
@@ -127,5 +131,5 @@ void Timer::renderFPS()
     
     texture = SDL_CreateTextureFromSurface(_renderer, fpsSurface);
     SDL_RenderCopy(_renderer, texture, NULL, &position);
-    //SDL_RenderCopy(_renderer, texture, NULL, NULL);
+  */  //SDL_RenderCopy(_renderer, texture, NULL, NULL);
 }

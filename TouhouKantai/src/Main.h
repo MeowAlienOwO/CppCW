@@ -35,14 +35,13 @@ bool initialize();
 
 void finalize();
 
-SDL_Surface* loadSurface(std::string path);
+//SDL_Surface* loadSurface(std::string path);
 
-SDL_Texture* loadTexture(std::string path);
+//SDL_Texture* loadTexture(std::string path);
 
-SDL_Renderer* getRenderer();
+//SDL_Renderer* getRenderer();
 
-void exitGame();
-void render(SDL_Texture* texture, SDL_Rect* srcrect, SDL_Rect* desrect);
+//void render(SDL_Texture* texture, SDL_Rect* srcrect, SDL_Rect* desrect);
 
 int draw(void* data);
 #endif
