@@ -5,9 +5,7 @@ Timer::Timer()
     cout << "-----Init Timer-----" << endl;
     stop();
     frameNum = 1000 / DEFAULT_FPS;
-    //frameNum = 17;
     timeColor = { 0xFF, 0xFF, 0xFF, 255 };
-    //position = { 200, 200, 128, 36 };
     currFps = 60.0;
    _lock = SDL_CreateMutex();
     cout << "-----End Init Timer-----" << endl;
@@ -37,16 +35,16 @@ bool Timer::isFrame()
     currTime = SDL_GetTicks();
     if (currTime % frameNum == 0)
         isframe = true;*/
-    bool res;
-    if (SDL_LockMutex(_lock) == 0){
-        res = ((currTime = SDL_GetTicks()) % frameNum);
-        SDL_UnlockMutex(_lock);
-    }
-    else{
-        cout << "Can't get lock! Error: " << SDL_GetError()<<endl;
-    }
+   /* bool res;
+    if (SDL_LockMutex(_lock) == 0){*/
+        //res = ((currTime = SDL_GetTicks()) % frameNum);
+    //    SDL_UnlockMutex(_lock);
+    //}
+    //else{
+    //    cout << "Can't get lock! Error: " << SDL_GetError()<<endl;
+    //}
 
-    return res;
+    return !((currTime = SDL_GetTicks()) % frameNum);
 }
 void Timer::start()
 {
@@ -54,6 +52,7 @@ void Timer::start()
     startTime = SDL_GetTicks();
     lastTime = startTime;
     currTime = lastTime + frameNum;
+    cout << "Timer start" << endl;
 }
 
 void Timer::stop()
@@ -64,6 +63,7 @@ void Timer::stop()
     currTime  = 0;
     currFps = 60.0;
     countedFrame = 0;
+    cout << "Timer stop" << endl;
 }
 
 void Timer::count()
@@ -71,12 +71,14 @@ void Timer::count()
     //currFps = 1.0 / (currTime - lastTime) * 1000;
     //lastTime = currTime;
     countedFrame++;
+    //cout << "counted frame:" << countedFrame << endl;
+
+    //cout << "curr time:" << countedFrame << endl;
     if (currFps > 2000000)
     {
         currFps = 0;
     }
-    if (currTime % 250 == 0)
-    currFps = countedFrame / ((currTime - startTime) / 1000.0f);
+    //if (currTime % 250 == 0)
     //renderFPS();
 }
 int Timer::frameNo()

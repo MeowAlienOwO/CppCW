@@ -23,9 +23,9 @@ class GameObject{
 
 public:
     // move-related methods
-    int getX();
+    virtual int getX();
     virtual void setX(int x);
-    int getY();
+    virtual int getY();
     virtual void setY(int y);
     double getSpeed();
     virtual std::string getType() = 0;

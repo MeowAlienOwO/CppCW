@@ -22,6 +22,9 @@ public:
     void draw();
     void setX(int x);
     void setY(int y);
+    int getX();
+    int getY();
+    void setFocusMod(bool slow);
     std::string getType();
 
     Player(SDL_Rect panel = {128, 32, 448, 256});
@@ -36,5 +39,7 @@ private:
     SDL_Rect _panelArea;
     Direction _direction;
     SDL_Rect _heroine[11];
+    bool _slow;
+
 };
 #endif
