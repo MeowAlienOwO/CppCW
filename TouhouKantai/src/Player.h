@@ -20,10 +20,6 @@ public:
     void attack();
     void spell();
     void draw();
-    void setX(int x);
-    void setY(int y);
-    int getX();
-    int getY();
     void setFocusMod(bool slow);
     std::string getType();
 

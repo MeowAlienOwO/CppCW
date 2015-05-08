@@ -23,20 +23,26 @@ class GameObject{
 
 public:
     // move-related methods
-    virtual int getX();
-    virtual void setX(int x);
-    virtual int getY();
-    virtual void setY(int y);
-    double getSpeed();
-    virtual std::string getType() = 0;
+    int getX();
+    void setX(int x);
+    int getY();
+    void setY(int y);
+    int getW();
+    int getH();
+    SDL_Point getCenter();
     void setSpeed(double speed);
+    double getSpeed();
+    virtual ~GameObject();
     virtual void move() = 0;
     virtual void draw() = 0;
-    GameObject(int x, int y, double speed);
-    virtual ~GameObject();
+    virtual std::string getType() = 0;
+    GameObject(SDL_Rect obj, double speed, SDL_Rect panel);
+    SDL_mutex* getLock();
 private:
-    SDL_Point _position;
+    SDL_Rect _obj;
+    SDL_Rect _panel;
     double _speed;
+    SDL_mutex* _lock;
 };
 
 #endif

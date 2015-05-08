@@ -14,6 +14,7 @@ public:
     void logic();
     void start();
     void exit();
+    int getMark();
     Stage* next();
     TutorialStage();
     ~TutorialStage();
@@ -37,7 +38,7 @@ private:
     SDL_Rect panelArea;
     
     Player* player;
-
+    int mark;
     bool tutorialExit;
 };
 #endif
