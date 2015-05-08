@@ -38,7 +38,6 @@ private:
     SDL_Rect _panelArea;
     
     Player* _player;
-    std::vector<Bullet*> _playerBullets;
     int _mark;
     bool _tutorialExit;
 };

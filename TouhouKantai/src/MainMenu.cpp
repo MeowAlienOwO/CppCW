@@ -9,68 +9,81 @@ MainMenu::MainMenu()
 }
 MainMenu::~MainMenu()
 {
-    MainMenu::finalize();
+    finalize();
 }
 
 void MainMenu::logic()
 {
     SDL_Event e;
-    while (!menu_exit)
+
+    // deal with key presses
+    while (SDL_PollEvent(&e) != 0)
     {
-        // deal with key presses
-        while (SDL_PollEvent(&e) != 0)
+        if (e.type == SDL_QUIT)
         {
-            if (e.type == SDL_QUIT)
+            _exit = true;
+        }
+        else if (e.type == SDL_KEYDOWN){
+
+            switch (e.key.keysym.sym)
             {
-                menu_exit = true;
-            }
-            else if (e.type == SDL_KEYDOWN){
+            case SDLK_UP:
+                // key up
+                _choice = ++_choice % ENTRY_NUM;
+                Mix_PlayChannel(-1, _ok, 0);
+                cout << _choice << endl;
 
-                switch (e.key.keysym.sym)
-                {
-                case SDLK_UP:
-                    // key up
-                    choice = ++choice % ENTRY_NUM;
-                    Mix_PlayChannel(-1, _ok, 0);
-                    cout << choice << endl;
+                break;
+            case SDLK_DOWN:
+                // key down
+                _choice = --_choice < 0 ? _choice = ENTRY_NUM - 1 : _choice;
 
-                    break;
-                case SDLK_DOWN:
-                    // key down
-                    choice = --choice < 0 ? choice = ENTRY_NUM - 1 : choice;
+                Mix_PlayChannel(-1, _ok, 0);
+                cout << _choice << endl;
+                break;
+            case SDLK_x:
+                // key cancel
+                cout << "cancel" << endl;
+                Mix_PlayChannel(-1, _cancel, 0);
+                _choice = ENTRY_NUM - 1;
+                break;
 
-                    Mix_PlayChannel(-1, _ok, 0);
-                    cout << choice << endl;
-                    break;
-                case SDLK_x:
-                    // key cancel
-                    cout << "cancel" << endl;
-                    Mix_PlayChannel(-1, _cancel, 0);
-                    choice = ENTRY_NUM - 1;
-                    break;
-
-                case SDLK_z:
-                    // key select
-                    Mix_PlayChannel(-1, _ok, 0);
-                    menu_exit = true;
-                    break;
-                default:
-                    break;
-                }
+            case SDLK_z:
+                // key select
+                Mix_PlayChannel(-1, _ok, 0);
+                _exit = true;
+                break;
+            default:
+                break;
             }
         }
     }
+
 }
 void MainMenu::start()
 {
-
+    
 
     if (Mix_PlayingMusic() == 0)
     {
         Mix_PlayMusic(_bgm, -1);
     }
+    gTimer->start();
+    while (!_exit)
+    {
 
-    logic();
+        logic();
+        if (gTimer->isFrame())
+        {
+            SDL_RenderClear(gRenderer);
+            draw();
+            gTimer->count();
+            SDL_RenderPresent(gRenderer);
+ 
+        }
+    }
+    gTimer->stop();
+
 
 }
 
@@ -108,7 +121,6 @@ bool MainMenu::initialize()
 
 void MainMenu::finalize()
 {
-    //SDL_Delay(500);
     // finalize pictures
     delete _background;
     _background = NULL;
@@ -130,11 +142,6 @@ void MainMenu::finalize()
 
 bool MainMenu::loadImages()
 {
-    // _background
-  /*  _background = loadTexture("img/menu_bg2.jpg");
-    menuChoice = loadTexture("img/mainmenu_choice.png");
-    title = loadTexture("img/mainmenu_title.png");
-   */ 
     _background = new Texture("img/menu_bg2.jpg");
     _menuChoice = new Texture("img/mainmenu_choice.png");
     _title = new Texture("img/mainmenu_title.png");
@@ -187,33 +194,28 @@ void MainMenu::draw()
         677
     };
 
-    //SDL_RenderClear(gRenderer);
-    // show _background
-    //render(_background, NULL, &backgroundOffset);
-    //render(title, NULL, &titleOffset);
+
     _background->render(NULL, &backgroundOffset);
     _title->render(NULL, &titleOffset);
     // show choice;
     for (int i = 0; i < ENTRY_NUM; i++)
     {
-        // if choice == i, use the second one which represents the selected situation
-        //render(menuChoice, &choicePosition[i][choice == i] , &choiceOffset);
-        _menuChoice->render(&choicePosition[i][choice == i], &choiceOffset);
+        // if _choice == i, use the second one which represents the selected situation
+        _menuChoice->render(&choicePosition[i][_choice == i], &choiceOffset);
         choiceOffset.y += 50;
     }
 
-    //SDL_RenderPresent(gRenderer);
 }
 
 void MainMenu::exit()
 {
     cout << "exit game" << endl;
-    MainMenu::menu_exit = true;
+    MainMenu::_exit = true;
 }
 
 Stage* MainMenu::next(){
 
-    switch (choice)
+    switch (_choice)
     {
     case 0:
         return (Stage*) new TutorialStage();

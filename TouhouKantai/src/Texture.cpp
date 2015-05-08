@@ -3,10 +3,8 @@ using namespace std;
 
 Texture::Texture(std::string path)
 {
-    //cout << "create texture " << path << endl;
 
     _texture = loadTexture(path);
-    //cout << "texture " + path << " created" << endl;
 
 }
 
@@ -44,28 +42,29 @@ Texture::~Texture()
 
 void Texture::render(SDL_Rect* src, SDL_Rect* dest)
 {
-    if (SDL_LockMutex(Texture::_lock) == 0)
-    {
+    //if (SDL_LockMutex(Texture::_lock) == 0)
+    //{
         SDL_RenderCopy(_renderer, _texture, src, dest);
-        SDL_UnlockMutex(Texture::_lock);
-    }
+        //SDL_UnlockMutex(Texture::_lock);
+    /*}
     else{
         cout << "Unable to lock! Error:" << SDL_GetError() << endl;
-    }
+    }*/
 }
 
 void Texture::renderEx(SDL_Rect* src, SDL_Rect* dest, double angle, SDL_Point* center, SDL_RendererFlip flip)
 {
-    if (SDL_LockMutex(Texture::_lock) == 0)
-    {
+    //if (SDL_LockMutex(Texture::_lock) == 0)
+    //{
 
         SDL_RenderCopyEx(_renderer, _texture, src, dest, angle, center, flip);
-        SDL_UnlockMutex(Texture::_lock);
-    }
-    else{
-        cout << "Unable to lock! Error:" << SDL_GetError() << endl;
-    }
+    //    SDL_UnlockMutex(Texture::_lock);
+    //}
+    //else{
+    //    cout << "Unable to lock! Error:" << SDL_GetError() << endl;
+    //}
 }
+
 int Texture::getWidth()
 {
     return w;
@@ -75,6 +74,7 @@ int Texture::getHeight()
 {
     return h;
 }
+
 void Texture::setRenderer(SDL_Renderer* renderer)
 {
     Texture::_renderer = renderer;

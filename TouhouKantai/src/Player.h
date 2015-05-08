@@ -13,8 +13,6 @@ typedef enum{
 
 class Player : public GameObject{
 public:
-    //int getMark();
-    //void setMark(int mark);
     void move();
     void setDirection(Direction dir);
     void attack();
@@ -27,6 +25,7 @@ public:
     Player(SDL_Rect panel = {128, 32, 448, 256});
     ~Player();
 
+    std::vector <Bullet*> _bullets;
 private: 
     //int _mark;
     Uint8 _moveState;
@@ -36,6 +35,5 @@ private:
     Direction _direction;
     SDL_Rect _heroine[11];
     bool _slow;
-    std::vector <Bullet*> _bullets;
 };
 #endif

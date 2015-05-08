@@ -8,7 +8,7 @@ class Bullet : public GameObject{
 public:
     Bullet(Texture* texture, SDL_Rect src, GameObject* from, 
             GameObject* target, SDL_Rect panel,SDL_Point start, 
-            double angle = 0);
+            double angle = PI / 2);
     ~Bullet();
     virtual void move();
     void draw();

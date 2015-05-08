@@ -11,6 +11,7 @@ Player::Player(SDL_Rect panel) : GameObject({panel.x + panel.w / 2,
     _flip = SDL_FLIP_NONE;
     _moveState = 0;
     _direction = HERE;
+
     // normal pic
     for (int i = 0; i < 4; i++)
     {
@@ -37,6 +38,7 @@ Player::~Player()
         delete _bullets[i];
         _bullets[i] = NULL;
     }
+
     delete _texture;
     _texture = NULL;
     cout << "-------End Destroy Player-------" << endl;
@@ -45,7 +47,6 @@ Player::~Player()
 void Player::move()
 {
 
-    //cout << "move " << _direction << " (" << getX() << "," << getY() << ")" << endl;
     if (_slow)
     {
         setSpeed(2);
@@ -66,12 +67,10 @@ void Player::move()
             _moveState = MAX(_moveState, 4);
             _moveState = MIN(_moveState, 10);
         }
-        //GameObject::setX(getX() - getSpeed() * 1);
 
         break;
     case RIGHT:
         Player::setX(getX() + getSpeed() * 1);
-        //GameObject::setX(getX() + getSpeed() * 1);
         if (gTimer->frameNo() % 7 == 0)
         {
             _flip = SDL_FLIP_HORIZONTAL;
@@ -83,7 +82,6 @@ void Player::move()
         break;
     case UP:
         Player::setY(getY() - getSpeed() * 1);
-        //GameObject::setY(getY() - getSpeed() * 1);
         if (gTimer->frameNo() % 7 == 0)
         {
 
@@ -93,7 +91,6 @@ void Player::move()
         break;
     case DOWN:
         Player::setY(getY() + getSpeed() * 1);
-        //GameObject::setY(getY() + getSpeed() * 1);
         if (gTimer->frameNo() % 7 == 0)
         {
 
@@ -120,7 +117,7 @@ void Player::setDirection(Direction direction)
 void Player::attack()
 {
     cout << "attack!" << endl;
-    Bullet* bullet = new Bullet(_texture, { 128, 0, 16, 16 }, this, NULL, getPanel(),getCenter());
+    Bullet* bullet = new Bullet(_texture, { 128, 0, 16, 16 }, this, NULL, getPanel(),getCenter(), PI * 3 / 2);
     _bullets.push_back(bullet);
     
 }
@@ -135,6 +132,8 @@ void Player::draw()
     SDL_Rect position = { getX(), getY(), getW(), getH() };
     SDL_Point center = getCenter();
     _texture->renderEx(&_heroine[_moveState], &position, 0, &center, _flip);
+
+
 }
 
 

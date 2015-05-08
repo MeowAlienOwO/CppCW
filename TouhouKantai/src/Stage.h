@@ -18,7 +18,7 @@ public:
     /* return next stage, return nullptr as termination */
     virtual Stage* next() = 0;
 
-    //virtual ~Stage() = 0;
+    virtual ~Stage();
     
 private:
 

@@ -14,6 +14,7 @@
 
 bool initialize();
 void finalize();
-int draw(void* data);
+//int draw(void* data);
 
+int kbdListener(void* data);
 #endif

@@ -19,4 +19,7 @@
 extern Timer *gTimer;
 extern SDL_Renderer* gRenderer;
 
+extern SDL_mutex* mutex;
+
+
 #endif

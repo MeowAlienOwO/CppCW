@@ -17,11 +17,11 @@ GameObject::GameObject(SDL_Rect obj, double speed, SDL_Rect panel)
 GameObject::~GameObject()
 {
     cout << "-----Destroying GameObject-----" << endl;
-    if (_lock != NULL)
-    {
+  /*  if (_lock != NULL)
+    {*/
         SDL_DestroyMutex(_lock);
         _lock = NULL;
-    }
+    //}
     cout << "-----Destroy GameObject Finished----" << endl;
 }
 

@@ -9,7 +9,7 @@ SDL_Renderer* gRenderer = NULL;
 Timer* gTimer = NULL;
 Stage* stage = NULL;
 SDL_Thread* drawing = NULL;
-SDL_mutex* stageLock = NULL;
+SDL_mutex* kbdLock = NULL;
 
 
 SDL_mutex* Texture::_lock = NULL;
@@ -21,25 +21,15 @@ int main(int argc, char *argv[])
     if (!initialize()){
         return 1;
     }
-  
-    drawing = SDL_CreateThread(draw, "draw-thread", nullptr);
-
     while (stage != nullptr)
     {
         stage->start();
-        if (SDL_LockMutex(stageLock) == 0)
-        {
-            Stage* temp = stage->next();
-            delete stage;
-            stage = temp;
-            SDL_UnlockMutex(stageLock);
-        }
-        else
-        {
-            cout << "Lock failed! Error: " << SDL_GetError() << endl;
-        }
-   }
-    
+        Stage* temp = stage->next();
+        delete stage;
+        stage = temp;
+
+    }
+
     finalize();
     return 0;
 }
@@ -115,6 +105,7 @@ bool initialize()
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 
     // init static field of texture
+    // concurrency stuff for rendering
     Texture::setRenderer(gRenderer);
     SDL_mutex* lock = SDL_CreateMutex();
     if (lock == NULL)
@@ -122,7 +113,6 @@ bool initialize()
         cout << "lock not created!" << SDL_GetError() << endl;
         return false;
     }
-
     Texture::setLock(lock);
 
     SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
@@ -131,12 +121,12 @@ bool initialize()
 
     // init gTimer
     gTimer = new Timer();
-
+    gTimer->start();
     //init stage
     stage = (Stage*) new MainMenu();
-    stageLock = SDL_CreateMutex();
+    kbdLock = SDL_CreateMutex();
     
-    if (stageLock == NULL)
+    if (kbdLock == NULL)
     {
         cout << "Can't create Lock! Error: " << SDL_GetError() << endl;
         return false;
@@ -154,8 +144,6 @@ void finalize(){
     cout << "-----Finalizing Game-----" << endl;
     //stop thread
     cout << "-----Closing Drawing Process-----" << endl;
-    int status;
-    SDL_WaitThread(drawing, &status);
     SDL_DestroyMutex(Texture::getLock());
     Texture::setLock(NULL);
 
@@ -179,6 +167,7 @@ void finalize(){
 
     // delete timer
     cout << "-----Destroying Timer-----" << endl;
+    gTimer->stop();
     delete gTimer;
     gTimer = NULL;
     cout << "-----Timer Destroyed-----" << endl;
@@ -198,48 +187,54 @@ void finalize(){
 }
 
 
-int draw(void* data)
+int kbdListener(void* data)
 {
-    cout << endl << "-------Start drawing--------" << endl;
-    SDL_mutex* renderLock = Texture::getLock();
-    gTimer->start();
-    while (stage != nullptr)
-    {
 
-        if (gTimer->isFrame())
-        {
-                SDL_RenderClear(gRenderer);
-
-
-            if (SDL_LockMutex(stageLock) == 0)
-            {
-                if (stage != nullptr)
-                {
-                    stage->draw();
-                }
-                SDL_UnlockMutex(stageLock);
-            }
-            else
-            {
-                cout << "not able to lock mutex!Error: " << SDL_GetError() << endl;
-                gTimer->stop();
-                return -1;
-
-            }
-
-            gTimer->renderFPS();
-
-
-            SDL_RenderPresent(gRenderer);
-
-            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            gTimer->count();
-        }
-    }
-
-    gTimer->stop();
-    cout << "-------End drawing--------" << endl;
     return 0;
 }
 
-
+//int draw(void* data)
+//{
+//    cout << endl << "-------Start drawing--------" << endl;
+//    SDL_mutex* renderLock = Texture::getLock();
+//    gTimer->start();
+//    while (stage != nullptr)
+//    {
+//
+//        if (gTimer->isFrame())
+//        {
+//                SDL_RenderClear(gRenderer);
+//
+//
+//            if (SDL_LockMutex(stageLock) == 0)
+//            {
+//                if (stage != nullptr)
+//                {
+//                    stage->draw();
+//                }
+//                SDL_UnlockMutex(stageLock);
+//            }
+//            else
+//            {
+//                cout << "not able to lock mutex!Error: " << SDL_GetError() << endl;
+//                gTimer->stop();
+//                return -1;
+//
+//            }
+//
+//            gTimer->renderFPS();
+//
+//
+//            SDL_RenderPresent(gRenderer);
+//
+//            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//            gTimer->count();
+//        }
+//    }
+//
+//    gTimer->stop();
+//    cout << "-------End drawing--------" << endl;
+//    return 0;
+//}
+//
+//
