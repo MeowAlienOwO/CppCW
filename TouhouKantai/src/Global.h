@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <vector>
 #include <thread>
 #include <chrono>
 #include "SDL.h"

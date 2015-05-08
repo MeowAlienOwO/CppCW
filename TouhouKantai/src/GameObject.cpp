@@ -29,11 +29,7 @@ SDL_mutex* GameObject::getLock()
 {
     return _lock;
 }
-//
-//void GameObject::setX(int x)
-//{
-//    _position.x = x;
-//}
+
 void GameObject::setX(int x)
 {
     if (SDL_LockMutex(_lock) == 0){
@@ -123,6 +119,16 @@ SDL_Point GameObject::getCenter()
 {
     return{ _obj.x + _obj.w / 2, _obj.y + _obj.h / 2 };
 }
+
+SDL_Rect GameObject::getRect()
+{
+    return _obj;
+}
+
+SDL_Rect GameObject::getPanel()
+{
+    return _panel;
+}
 void GameObject::setSpeed(double speed)
 {
     _speed = speed;
@@ -131,4 +137,14 @@ void GameObject::setSpeed(double speed)
 double GameObject::getSpeed()
 {
     return _speed;
+}
+
+bool GameObject::isAtEdge()
+{
+
+    return (_obj.x == _panel.x                    ||
+            _obj.y == _panel.y                    ||
+            _obj.x + _obj.w == _panel.x + _panel.w||
+            _obj.y + _obj.h == _panel.y + _panel.h
+        );
 }

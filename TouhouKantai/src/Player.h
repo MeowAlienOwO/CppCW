@@ -21,6 +21,7 @@ public:
     void spell();
     void draw();
     void setFocusMod(bool slow);
+    std::vector<Bullet*>* getBullets();
     std::string getType();
 
     Player(SDL_Rect panel = {128, 32, 448, 256});
@@ -32,10 +33,9 @@ private:
     SDL_RendererFlip _flip;
     SDL_mutex* _lock;
     Texture* _texture;
-    SDL_Rect _panelArea;
     Direction _direction;
     SDL_Rect _heroine[11];
     bool _slow;
-
+    std::vector <Bullet*> _bullets;
 };
 #endif

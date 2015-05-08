@@ -29,7 +29,10 @@ public:
     void setY(int y);
     int getW();
     int getH();
+    SDL_Rect getRect();
     SDL_Point getCenter();
+    SDL_Rect getPanel();
+    bool isAtEdge();
     void setSpeed(double speed);
     double getSpeed();
     virtual ~GameObject();

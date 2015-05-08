@@ -35,10 +35,11 @@ private:
     Texture* _background;
     Texture* _panel;
     
-    SDL_Rect panelArea;
+    SDL_Rect _panelArea;
     
-    Player* player;
-    int mark;
-    bool tutorialExit;
+    Player* _player;
+    std::vector<Bullet*> _playerBullets;
+    int _mark;
+    bool _tutorialExit;
 };
 #endif

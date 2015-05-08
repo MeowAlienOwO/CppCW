@@ -2,8 +2,8 @@
 
 using namespace std;
 Player::Player(SDL_Rect panel) : GameObject({panel.x + panel.w / 2,
-                                                panel.y + panel.h - 48,
-                                                32,48}, 4, panel)
+                                                panel.y + panel.h - 96,
+                                                32, 48}, 4, panel)
 {
     cout << "-------Init Player-------" << endl;
 
@@ -22,7 +22,6 @@ Player::Player(SDL_Rect panel) : GameObject({panel.x + panel.w / 2,
         _heroine[i + 4] = { getW() * i, getH() * 1, getW(), getH() };
     }
 
-    _panelArea = panel;
     _slow = false;
 
     cout << "-------End Init Player-------" << endl;
@@ -33,7 +32,13 @@ Player::~Player()
 {
 
     cout << "-------Destroy Player-------" << endl;
+    for (int i = 0; i < _bullets.size(); i++)
+    {
+        delete _bullets[i];
+        _bullets[i] = NULL;
+    }
     delete _texture;
+    _texture = NULL;
     cout << "-------End Destroy Player-------" << endl;
 }
 
@@ -101,7 +106,6 @@ void Player::move()
         {
             _flip = SDL_FLIP_NONE;
             _moveState = _moveState++ % 4;
-            //cout << "change state!" << gTimer->frameNo()<<endl;
         }
         break;
     }
@@ -115,12 +119,15 @@ void Player::setDirection(Direction direction)
 }
 void Player::attack()
 {
+    cout << "attack!" << endl;
+    Bullet* bullet = new Bullet(_texture, { 128, 0, 16, 16 }, this, NULL, getPanel(),getCenter());
+    _bullets.push_back(bullet);
     
 }
 
 void Player::spell()
 {
-    
+    cout << "spell!" << endl;
 }
 
 void Player::draw()
@@ -137,7 +144,11 @@ std::string Player::getType()
 }
 
 
-
 void Player::setFocusMod(bool slow){
     _slow = slow;
+}
+
+std::vector<Bullet*>* Player::getBullets()
+{
+    return &_bullets;
 }

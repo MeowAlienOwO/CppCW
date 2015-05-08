@@ -12,9 +12,10 @@ TutorialStage::TutorialStage()
         throw exception("Initialize failed");
     }
 
-    tutorialExit = false;
+    _tutorialExit = false;
     cout << "-----End Stage Tutorial-----" << endl;
 }
+
 TutorialStage::~TutorialStage()
 {
     TutorialStage::finalize();
@@ -24,7 +25,7 @@ TutorialStage::~TutorialStage()
 bool TutorialStage::initialize()
 {
     
-    panelArea = { 128, 32, 448, 672 };
+    _panelArea = { 128, 32, 448, 672 };
     if (!loadImage())
     {
         cout << "Image Load Failed!\nError: " << IMG_GetError() << endl;
@@ -41,7 +42,6 @@ bool TutorialStage::initialize()
     }
 
     cout << "-----End Tutorial Init-----" << endl;
-    
 
     return true;
 }
@@ -52,7 +52,7 @@ void TutorialStage::draw()
     //SDL_RenderClear(gRenderer);
     //drawPanel();
 
-    player->draw();
+    _player->draw();
     drawBackground();
     //gTimer->renderFPS();
 }
@@ -77,9 +77,22 @@ void TutorialStage::logic()
     if (gTimer->isFrame())
     {
         //player->draw();
-        player->move();
+        _player->move();
+        for (int i = 0; i < _playerBullets.size(); i++)
+        {
+            Bullet* temp = _playerBullets[i];
+            temp->move();
+            if (temp->isAtEdge())
+            {
+                delete temp;
+                _playerBullets.erase(_playerBullets.begin() + i);
+            }
+        }
+        // reduce the extra space
+        std::vector<Bullet*>(_playerBullets).swap(_playerBullets);
+        //_playerBullets.resize();
         // remove the print part the program won't work;
-        cout << "move " << " (" << player->getX() << "," << player->getY() << ")" << endl;
+        cout << "move " << " (" << _player->getX() << "," << _player->getY() << ")" << endl;
     }
 
 
@@ -88,10 +101,11 @@ void TutorialStage::logic()
 void TutorialStage::start()
 {
     cout << "--------Tutorial Start--------" << endl;
-    while (!tutorialExit)
+    while (!_tutorialExit)
     {
         // release cpu
         //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        //std::this_thread::sleep_for(std::chrono::microseconds(1));
         //SDL_Delay(1);
         logic();
     
@@ -103,7 +117,7 @@ void TutorialStage::start()
 void TutorialStage::exit()
 {
     cout << "exit tutorial stage!" << endl;
-    tutorialExit = true;
+    _tutorialExit = true;
 }
 
 
@@ -157,11 +171,12 @@ bool TutorialStage::loadObject()
 {
     cout << "-----Start Load Object-----" << endl;
     //player = *new Player(panelArea);
-    player = new Player(panelArea);
-    if (nullptr == player)
+    _player = new Player(_panelArea);
+    if (nullptr == _player)
     {
         return false;
     }
+    _playerBullets = *(_player->getBullets());
 
     cout << "-----Object Load Finished-----" << endl;
 
@@ -171,7 +186,7 @@ bool TutorialStage::loadObject()
 void TutorialStage::freeObject()
 {
     cout << "-----Start Free Object-----" << endl;
-    delete player;
+    delete _player;
     cout << "-----Object Free Finished-----" << endl;
    
 }
@@ -186,11 +201,11 @@ void TutorialStage::drawBackground()
     {
         for (offset.y = 0; offset.y < SCREEN_HEIGHT; offset.y += offset.h)
         {
-            if ((offset.x >= panelArea.x &&
-                offset.x <= panelArea.x + panelArea.w - bgSrc.w)
+            if ((offset.x >= _panelArea.x &&
+                offset.x <= _panelArea.x + _panelArea.w - bgSrc.w)
                 &&
-                (offset.y >= panelArea.y &&
-                offset.y <= panelArea.y + panelArea.h - bgSrc.h))
+                (offset.y >= _panelArea.y &&
+                offset.y <= _panelArea.y + _panelArea.h - bgSrc.h))
             {
                 // case the _background tile is in panel area
             }
@@ -208,15 +223,15 @@ void TutorialStage::drawBackground()
 void TutorialStage::drawPanel()
 {
 
-    static SDL_Rect panelBgDest = {panelArea.x, panelArea.y - 960, panelArea.w, 960};
+    static SDL_Rect panelBgDest = {_panelArea.x, _panelArea.y - 960, _panelArea.w, 960};
     static int count = 0;
     SDL_Rect panelBgSrc = { 0, 0, 256, 256 };
     SDL_Rect panelTreeSrcL = { 256, 0, 128, 256 };
     SDL_Rect panelTreeSrcR = { 384, 0, 128, 256 };
     
-    if (panelBgDest.y + panelBgDest.h + 1 < (panelArea.y + panelArea.h))
+    if (panelBgDest.y + panelBgDest.h + 1 < (_panelArea.y + _panelArea.h))
     {
-        panelBgDest.y = panelArea.y;
+        panelBgDest.y = _panelArea.y;
 
     }
     else if (count = (++count %100) )
@@ -249,26 +264,31 @@ void TutorialStage::handleKbdEvent()
             case SDLK_q:
                     exit();
                     break;
+            case SDLK_z:
+                _player->attack();
+                break;
+            case SDLK_x:
+                _player->spell();
             case SDLK_LSHIFT:
-                player->setFocusMod(true);
+                _player->setFocusMod(true);
                 break;
             case SDLK_UP:
-                player->setDirection(UP);
+                _player->setDirection(UP);
                 //SDL_PumpEvents();
                 SDL_FlushEvent(SDL_KEYUP);
                 break;
             case SDLK_DOWN:
-                player->setDirection(DOWN);
+                _player->setDirection(DOWN);
                 //SDL_PumpEvents();
                 SDL_FlushEvent(SDL_KEYUP);
                 break;
             case SDLK_LEFT:
-                player->setDirection(LEFT);
+                _player->setDirection(LEFT);
                 //SDL_PumpEvents();
                 SDL_FlushEvent(SDL_KEYUP);
                 break;
             case SDLK_RIGHT:
-                player->setDirection(RIGHT);
+                _player->setDirection(RIGHT);
                 //SDL_PumpEvents();
                 SDL_FlushEvent(SDL_KEYUP);
                 break;
@@ -286,21 +306,21 @@ void TutorialStage::handleKbdEvent()
                 switch (e.key.keysym.sym)
                 {
                 case SDLK_LSHIFT:
-                    player->setFocusMod(false);
+                    _player->setFocusMod(false);
                 case SDLK_UP:
-                    player->setDirection(HERE);
+                    _player->setDirection(HERE);
                     //SDL_FlushEvent(SDL_KEYUP);
                     break;
                 case SDLK_DOWN:
-                    player->setDirection(HERE);
+                    _player->setDirection(HERE);
                     //SDL_FlushEvent(SDL_KEYDOWN);
                     break;
                 case SDLK_LEFT:
-                    player->setDirection(HERE);
+                    _player->setDirection(HERE);
                     //SDL_FlushEvent(SDL_KEYDOWN);
                     break;
                 case SDLK_RIGHT:
-                    player->setDirection(HERE);
+                    _player->setDirection(HERE);
                     //SDL_FlushEvent(SDL_KEYDOWN);
                     break;
                 default:
