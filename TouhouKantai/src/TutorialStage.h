@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "Stage.h"
 #include "Player.h"
+#include "Enermy.h"
 
 class TutorialStage: public Stage{
 
@@ -34,11 +35,13 @@ private:
 
     Texture* _background;
     Texture* _panel;
+    Texture* _enermy;
     
     SDL_Rect _panelArea;
     
     Player* _player;
     int _mark;
     bool _tutorialExit;
+    std::vector<Enermy*> _enermies;
 };
 #endif

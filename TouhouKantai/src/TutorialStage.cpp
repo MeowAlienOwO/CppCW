@@ -54,6 +54,15 @@ void TutorialStage::draw()
     {
         _player->_bullets[i]->draw();
     }
+    for (int i = 0; i < _enermies.size(); i++)
+    {
+        _enermies[i]->draw();
+        for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
+        {
+            _enermies[i]->_bullets[j]->draw();
+        }
+    }
+ 
     drawBackground();
 }
 
@@ -69,9 +78,10 @@ void TutorialStage::finalize()
 
 void TutorialStage::logic()
 {
-    handleKbdEvent();
     if (gTimer->isFrame())
     {
+
+        handleKbdEvent();
         _player->move();
 
         for (int i = 0; i < _player->_bullets.size(); i++)
@@ -83,8 +93,26 @@ void TutorialStage::logic()
                 _player->_bullets.erase(_player->_bullets.begin() + i);
             }
         }
+        
         // reduce the extra space
         std::vector<Bullet*>(_player->_bullets).swap(_player->_bullets);
+
+        for (int i = 0; i < _enermies.size(); i++)
+        {
+            _enermies[i]->move();
+
+            for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
+            {
+
+                _enermies[i]->_bullets[j]->move();
+                if (_enermies[i]->_bullets[j]->isAtEdge())
+                {
+                    delete _enermies[i]->_bullets[j];
+                    _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
+                }
+            }
+            std::vector<Bullet*>(_enermies[i]->_bullets).swap(_enermies[i]->_bullets);
+        }
 
         // remove the print part the program won't work;
         //cout << "move " << " (" << _player->getX() << "," << _player->getY() << ")" << endl;
@@ -139,6 +167,7 @@ bool TutorialStage::loadImage()
 
     _background = new Texture("img/front.png");
     _panel = new Texture("img/tutorial_bg.png");
+    _enermy = new Texture("img/stg1enm.png");
     cout << "-----Image Load Finished-----" << endl;
 
     return true;
@@ -179,8 +208,11 @@ bool TutorialStage::loadObject()
         return false;
     }
 
+    Enermy* enermy = new Enermy(_enermy, { 0, 256, 32, 56 },
+    { _panelArea.x + _panelArea.w / 2, _panelArea.y + _panelArea.h / 2 },
+    _panelArea);
     cout << "-----Object Load Finished-----" << endl;
-
+    _enermies.push_back(enermy);
     return true;
 }
 
@@ -188,6 +220,11 @@ void TutorialStage::freeObject()
 {
     cout << "-----Start Free Object-----" << endl;
     delete _player;
+    for (int i = 0; i < _enermies.size(); i++)
+    {
+        delete _enermies[i];
+        _enermies.erase(_enermies.begin() + i);
+    }
     cout << "-----Object Free Finished-----" << endl;
    
 }
@@ -315,6 +352,5 @@ void TutorialStage::handleKbdEvent()
 
         }
 
-
-    }
+   }
 }

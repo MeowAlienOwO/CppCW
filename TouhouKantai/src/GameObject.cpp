@@ -39,7 +39,6 @@ void GameObject::setX(int x)
         }
         else if (x + _obj.w > _panel.x + _panel.w)
         {
-            //GameObject::setX(_panelArea.x + _panelArea.w - _heroine[0].w);
             _obj.x = (_panel.x + _panel.w - _obj.w);
         }
         else

@@ -9,9 +9,10 @@ Bullet::Bullet(Texture* texture, SDL_Rect src, GameObject* from, GameObject* tar
     _from = from;
     _target = target;
     _angle = angle;
-    SDL_Point p = _from->getCenter();
-    setX(p.x);
-    setY(p.y);
+    cout << "bullet start at:(" << getX() << "," << getY() << ")" << endl;
+    //SDL_Point p = _from->getCenter();
+    //setX(p.x);
+    //setY(p.y);
 }
 
 
@@ -23,18 +24,20 @@ Bullet::~Bullet()
 
 void Bullet::move()
 {
-        int dx = getSpeed() * 1 * cos(_angle);
-        int dy = getSpeed() * 1 * sin(_angle);
+        int dx = (int)getSpeed() * 1 * cos(_angle);
+        //cout <<"cos(angle) = "<< cos(_angle) << endl;
+        //cout << "dx = " << dx << endl;
+        int dy = (int)getSpeed() * 1 * sin(_angle);
+        //cout <<"sin(angle) = "<< sin(_angle) << endl;
         setX(getX() + dx);
         setY(getY() + dy);
-
 }
 
 
 void Bullet::draw()
 {
 
-    _texture->renderEx(&_src, &getRect(), _angle, &getCenter(), SDL_FLIP_NONE);
+    _texture->renderEx(&_src, &getRect(), 0, &getCenter(), SDL_FLIP_NONE);
 
 }
 
