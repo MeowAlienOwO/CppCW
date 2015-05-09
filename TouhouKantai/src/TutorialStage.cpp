@@ -18,14 +18,14 @@ TutorialStage::TutorialStage()
 
 TutorialStage::~TutorialStage()
 {
-    TutorialStage::finalize();
+   finalize();
         
 }
 
 bool TutorialStage::initialize()
 {
     
-    _panelArea = { 128, 32, 448, 672 };
+    _panelArea = { 128 - 16, 32 -16, 448 + 32, 672 + 32 };
     if (!loadImage())
     {
         cout << "Image Load Failed!\nError: " << IMG_GetError() << endl;
@@ -86,16 +86,34 @@ void TutorialStage::logic()
 
         for (int i = 0; i < _player->_bullets.size(); i++)
         {
-            _player->_bullets[i]->move();
+            Bullet* bullet = _player->_bullets[i];
+            bullet->move();
             if (_player->_bullets[i]->isAtEdge())
             {
                 delete _player->_bullets[i];
                 _player->_bullets.erase(_player->_bullets.begin() + i);
+                break;
+            }
+            else
+            {
+                for (int j = 0; j < _enermies.size(); j++)
+                {
+                    Enermy* enermy = _enermies[j];
+                    if (bullet->collide(enermy))
+                    {
+                        cout << "hit enermy!" << endl;
+                        delete enermy;
+                        _enermies.erase(_enermies.begin() + j);
+                        delete bullet;
+                        _player->_bullets.erase(_player->_bullets.begin() + i);
+                    }
+                }
             }
         }
-        
+
         // reduce the extra space
         std::vector<Bullet*>(_player->_bullets).swap(_player->_bullets);
+        std::vector<Enermy*>(_enermies).swap(_enermies);
 
         for (int i = 0; i < _enermies.size(); i++)
         {
@@ -103,13 +121,27 @@ void TutorialStage::logic()
 
             for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
             {
-
-                _enermies[i]->_bullets[j]->move();
-                if (_enermies[i]->_bullets[j]->isAtEdge())
+                Bullet* bullet =  _enermies[i]->_bullets[j];
+                bullet->move();
+                if (bullet->collide(_player))
                 {
-                    delete _enermies[i]->_bullets[j];
+                    cout << "hit player!" << endl;
+                    if (_player->hit())
+                    {
+                        exit();
+                        cout << "player die!" << endl;
+                        break;
+                    }
+                    delete bullet;
+
                     _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
                 }
+                else if (bullet->isAtEdge())
+                {
+                    delete bullet;
+                    _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
+                }
+                
             }
             std::vector<Bullet*>(_enermies[i]->_bullets).swap(_enermies[i]->_bullets);
         }
@@ -211,8 +243,10 @@ bool TutorialStage::loadObject()
     Enermy* enermy = new Enermy(_enermy, { 0, 256, 32, 56 },
     { _panelArea.x + _panelArea.w / 2, _panelArea.y + _panelArea.h / 2 },
     _panelArea);
-    cout << "-----Object Load Finished-----" << endl;
     _enermies.push_back(enermy);
+
+    _judge = (bool*)malloc(sizeof(bool) * (_panelArea.w * _panelArea.h));
+    cout << "-----Object Load Finished-----" << endl;
     return true;
 }
 
@@ -225,6 +259,8 @@ void TutorialStage::freeObject()
         delete _enermies[i];
         _enermies.erase(_enermies.begin() + i);
     }
+    free(_judge);
+    _judge = NULL;
     cout << "-----Object Free Finished-----" << endl;
    
 }

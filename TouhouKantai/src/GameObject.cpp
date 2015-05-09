@@ -147,3 +147,12 @@ bool GameObject::isAtEdge()
             _obj.y + _obj.h == _panel.y + _panel.h
         );
 }
+
+
+bool GameObject::collide(GameObject* o)
+{
+    return !(_obj.x + _obj.w < o->getX()    ||
+             _obj.y + _obj.h < o->getY()    ||
+             _obj.x > o->getX() + o->getW() ||
+             _obj.y > o->getY() + o->getH());
+}

@@ -43,5 +43,6 @@ private:
     int _mark;
     bool _tutorialExit;
     std::vector<Enermy*> _enermies;
+    bool* _judge;
 };
 #endif

@@ -35,10 +35,12 @@ public:
     bool isAtEdge();
     void setSpeed(double speed);
     double getSpeed();
+    virtual bool collide(GameObject* e);
     virtual ~GameObject();
     virtual void move() = 0;
     virtual void draw() = 0;
     virtual std::string getType() = 0;
+    
     GameObject(SDL_Rect obj, double speed, SDL_Rect panel);
     SDL_mutex* getLock();
 private:

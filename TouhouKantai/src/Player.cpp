@@ -11,7 +11,7 @@ Player::Player(SDL_Rect panel) : GameObject({panel.x + panel.w / 2,
     _flip = SDL_FLIP_NONE;
     _moveState = 0;
     _direction = HERE;
-
+    _hp = 2;
     // normal pic
     for (int i = 0; i < 4; i++)
     {
@@ -147,7 +147,11 @@ void Player::setFocusMod(bool slow){
     _slow = slow;
 }
 
-std::vector<Bullet*>* Player::getBullets()
+bool Player::hit()
 {
-    return &_bullets;
+    return --_hp <= 0;
 }
+//std::vector<Bullet*>* Player::getBullets()
+//{
+//    return &_bullets;
+//}

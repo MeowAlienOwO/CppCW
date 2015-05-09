@@ -29,6 +29,7 @@ private:
     SDL_Rect _src;
     Uint8 _state;
     void(*_logic)(Enermy* e, int state);
+
 };
 
 void defaultLogic(Enermy* e, int state);
