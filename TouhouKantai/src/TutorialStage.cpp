@@ -19,13 +19,10 @@ TutorialStage::TutorialStage()
 TutorialStage::~TutorialStage()
 {
    finalize();
-        
 }
 
 bool TutorialStage::initialize()
 {
-    
-    _panelArea = { 128 - 16, 32 -16, 448 + 32, 672 + 32 };
     if (!loadImage())
     {
         cout << "Image Load Failed!\nError: " << IMG_GetError() << endl;
@@ -40,7 +37,7 @@ bool TutorialStage::initialize()
     {
         cout << "Object Load Failed!\nError: " << SDL_GetError() << endl;
     }
-
+    _mark = 0;
     cout << "-----End Tutorial Init-----" << endl;
 
     return true;
@@ -54,6 +51,7 @@ void TutorialStage::draw()
     {
         _player->_bullets[i]->draw();
     }
+
     for (int i = 0; i < _enermies.size(); i++)
     {
         _enermies[i]->draw();
@@ -106,6 +104,8 @@ void TutorialStage::logic()
                         _enermies.erase(_enermies.begin() + j);
                         delete bullet;
                         _player->_bullets.erase(_player->_bullets.begin() + i);
+                        _mark += 10;
+                        break;
                     }
                 }
             }
@@ -146,7 +146,6 @@ void TutorialStage::logic()
             std::vector<Bullet*>(_enermies[i]->_bullets).swap(_enermies[i]->_bullets);
         }
 
-        // remove the print part the program won't work;
         //cout << "move " << " (" << _player->getX() << "," << _player->getY() << ")" << endl;
     }
 
@@ -173,6 +172,8 @@ void TutorialStage::start()
             SDL_RenderPresent(gRenderer);
         }
     }
+
+    drawMark();
     gTimer->stop();
     cout << "--------Tutorial End--------" << endl;
 
@@ -200,6 +201,12 @@ bool TutorialStage::loadImage()
     _background = new Texture("img/front.png");
     _panel = new Texture("img/tutorial_bg.png");
     _enermy = new Texture("img/stg1enm.png");
+
+    _panelArea = { 112, 16, 480, 704 };
+    _playerText = { 0, 112, 64, 16 };
+    _bombText = { 0, 128, 64, 16 };
+    _playerStar = { 64, 80, 16, 16 };
+    _bombStar = { 80, 80, 16, 16 };
     cout << "-----Image Load Finished-----" << endl;
 
     return true;
@@ -227,9 +234,8 @@ void TutorialStage::freeMusic()
     cout << "-----Start Free Music-----" << endl;
     
     cout << "-----Music Free Finished-----" << endl;
-
-
 }
+
 bool TutorialStage::loadObject()
 {
     cout << "-----Start Load Object-----" << endl;
@@ -245,7 +251,7 @@ bool TutorialStage::loadObject()
     _panelArea);
     _enermies.push_back(enermy);
 
-    _judge = (bool*)malloc(sizeof(bool) * (_panelArea.w * _panelArea.h));
+    //_judge = (bool*)malloc(sizeof(bool) * (_panelArea.w * _panelArea.h));
     cout << "-----Object Load Finished-----" << endl;
     return true;
 }
@@ -259,8 +265,8 @@ void TutorialStage::freeObject()
         delete _enermies[i];
         _enermies.erase(_enermies.begin() + i);
     }
-    free(_judge);
-    _judge = NULL;
+    //free(_judge);
+    //_judge = NULL;
     cout << "-----Object Free Finished-----" << endl;
    
 }
@@ -269,6 +275,7 @@ void TutorialStage::drawBackground()
 {
     // set background tile source and offset
     SDL_Rect bgSrc = { 0, 224, 32, 32 };
+    //SDL_Rect bgSrc = {}
     SDL_Rect offset = { 0, 0, bgSrc.w, bgSrc.h };
 
     for (offset.x = 0; offset.x < SCREEN_WIDTH; offset.x += offset.w)
@@ -291,6 +298,24 @@ void TutorialStage::drawBackground()
         }
 
     }
+
+    SDL_Rect _playerTextDest = { _panelArea.x + _panelArea.w + 32,
+                                    _panelArea.y + _panelArea.h / 3, 
+                                    _playerText.w, _playerText.h };
+    _background->render(&_playerText, &_playerTextDest);
+    SDL_Rect _playerStarDest = { _playerTextDest.x + _playerTextDest.w, _playerTextDest.y, 
+        _playerStar.w, _playerStar.h};
+
+    for (int i = 0; i < _player->getHP(); i++)
+    {
+        cout << "drawing hp star" << endl;
+        _background->render(&_playerStar, &_playerStarDest);
+        _playerStarDest.x += _playerStar.w;
+    }
+    SDL_Rect _bombTextDest = { _playerTextDest.x, _playerTextDest.y + _playerTextDest.h + 16,
+                                _bombText.w, _bombText.h };
+    _background->render(&_bombText, &_bombTextDest);
+
 }
 
 void TutorialStage::drawPanel()
@@ -316,6 +341,63 @@ void TutorialStage::drawPanel()
   
 }
 
+void TutorialStage::drawMark()
+{
+    SDL_RenderClear(gRenderer);
+
+    string markStr;
+    ostringstream sstream;
+    // change float to string && cut after two decimal numbers
+    sstream << _mark;
+    markStr = sstream.str();
+    Texture* markText = new Texture("font/font.ttf", "Your Mark", { 0x00, 0x00, 0x00, 0xFF }, 64);
+    
+    SDL_Rect markTextDest = { SCREEN_WIDTH / 2 - markText->getWidth() / 2,
+                            SCREEN_HEIGHT / 2 - 300, 
+                            markText->getWidth(), 
+                            markText->getHeight()
+                        };
+    //printf("position:(%d,%d,%d,%d)\n", position.x, position.y, position.w, position.h);
+//    Texture* markText = new Texture()
+    Texture* scoreBg = new Texture("img/score_bg.jpg");
+    SDL_Rect screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+    scoreBg->render(NULL, &screenRect);
+    cout << "render score BG finished" << endl;
+    markText->render(NULL, &markTextDest);
+    cout << "render score text finished " << endl;
+    delete markText;
+    markText = new Texture("font/font.ttf", markStr, { 0x00, 0x00, 0x00, 0xFF }, 64);
+    
+    markTextDest = { SCREEN_WIDTH / 2 - markText->getWidth() / 2,
+                            SCREEN_HEIGHT / 2 - 300 + markText->getHeight(), 
+                            markText->getWidth(), 
+                            markText->getHeight()
+                        };
+
+    markText->render(NULL, &markTextDest);
+    SDL_RenderPresent(gRenderer);
+    SDL_Event e;
+    bool quit = false;
+    while (!quit){
+
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_QUIT)
+            {
+                quit = true;
+            }
+            else if (e.type == SDL_KEYDOWN)
+            {
+                if (e.key.keysym.sym == SDLK_q)
+                {
+                    quit = true;
+                }
+            }
+        }
+    }
+
+}
+
 void TutorialStage::handleKbdEvent()
 {
     SDL_Event e;
@@ -329,17 +411,19 @@ void TutorialStage::handleKbdEvent()
         }
         else if (e.type == SDL_KEYDOWN)
         {
-            
+
             switch (e.key.keysym.sym)
             {
             case SDLK_q:
-                    exit();
-                    break;
+                exit();
+                break;
             case SDLK_z:
-                    _player->attack();
+                _player->attack();
                 break;
             case SDLK_x:
                 _player->spell();
+                break;
+
             case SDLK_LSHIFT:
                 _player->setFocusMod(true);
                 break;

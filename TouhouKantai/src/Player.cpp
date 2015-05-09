@@ -11,7 +11,7 @@ Player::Player(SDL_Rect panel) : GameObject({panel.x + panel.w / 2,
     _flip = SDL_FLIP_NONE;
     _moveState = 0;
     _direction = HERE;
-    _hp = 2;
+    _hp = 3;
     // normal pic
     for (int i = 0; i < 4; i++)
     {
@@ -141,7 +141,10 @@ std::string Player::getType()
 {
     return "Player";
 }
-
+int Player::getHP()
+{
+    return _hp;
+}
 
 void Player::setFocusMod(bool slow){
     _slow = slow;

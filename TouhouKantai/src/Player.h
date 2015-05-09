@@ -21,15 +21,16 @@ public:
     void setFocusMod(bool slow);
     //std::vector<Bullet*>* getBullets();
     std::string getType();
-
+    int getHP();
     Player(SDL_Rect panel = {128, 32, 448, 256});
     ~Player();
     bool hit();
+    void hpIncrease(int hp);
     std::vector <Bullet*> _bullets;
 private: 
     //int _mark;
     Uint8 _moveState;
-    Uint8 _hp;
+    int _hp;
     SDL_RendererFlip _flip;
     SDL_mutex* _lock;
     Texture* _texture;

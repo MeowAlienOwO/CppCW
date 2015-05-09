@@ -30,19 +30,24 @@ private:
     void freeObject();
     void drawBackground();
     void drawPanel();
+    void drawMark();
     void handleKbdEvent();
-    void checkUserMove();
-
+    //void checkUserMove();
     Texture* _background;
     Texture* _panel;
     Texture* _enermy;
-    
+
     SDL_Rect _panelArea;
-    
+    SDL_Rect _playerText;
+    SDL_Rect _bombText;
+    SDL_Rect _playerStar;
+    SDL_Rect _bombStar;
+    SDL_Rect _score;
+    SDL_Rect _highScore;
     Player* _player;
     int _mark;
     bool _tutorialExit;
     std::vector<Enermy*> _enermies;
-    bool* _judge;
+    //bool* _judge;
 };
 #endif

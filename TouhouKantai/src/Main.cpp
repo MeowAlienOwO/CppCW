@@ -17,7 +17,6 @@ SDL_Renderer* Texture::_renderer = NULL;
 
 int main(int argc, char *argv[])
 {
-    // initialization
     if (!initialize()){
         return 1;
     }
@@ -27,7 +26,6 @@ int main(int argc, char *argv[])
         Stage* temp = stage->next();
         delete stage;
         stage = temp;
-
     }
 
     finalize();
@@ -150,7 +148,6 @@ void finalize(){
     cout << "-----Drawing Process Closed-----" << endl;
 
     // free texture and render
-
     cout << "-----Destroying Renderer-----" << endl;
     SDL_DestroyRenderer(gRenderer);
     gRenderer = NULL;
