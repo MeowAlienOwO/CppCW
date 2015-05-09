@@ -14,9 +14,36 @@ MainMenu::~MainMenu()
 
 void MainMenu::logic()
 {
-    SDL_Event e;
 
     // deal with key presses
+    //if (gKbdState->getKeyState(KEY_WATCHING_UP))
+    //{
+    //    _choice = ++_choice % ENTRY_NUM;
+    //    Mix_PlayChannel(-1, _ok, 0);
+
+    //}
+    //else if (gKbdState->getKeyState(KEY_WATCHING_DOWN))
+    //{
+    //    _choice = --_choice < 0 ? _choice = ENTRY_NUM - 1 : _choice;
+    //    Mix_PlayChannel(-1, _ok, 0);
+
+    //}
+    //else if (gKbdState->getKeyState(KEY_WATCHING_Z))
+    //{
+    //    Mix_PlayChannel(-1, _ok, 0);
+    //    _exit = true;
+    //}
+    //else if (gKbdState->getKeyState(KEY_WATCHING_X))
+    //{
+    //    cout << "cancel" << endl;
+    //    Mix_PlayChannel(-1, _cancel, 0);
+    //    _choice = ENTRY_NUM - 1;
+    //}
+
+
+
+
+    SDL_Event e;
     while (SDL_PollEvent(&e) != 0)
     {
         if (e.type == SDL_QUIT)
@@ -32,13 +59,8 @@ void MainMenu::logic()
                 _choice = ++_choice % ENTRY_NUM;
                 Mix_PlayChannel(-1, _ok, 0);
                 cout << _choice << endl;
-
-                break;
+                   break;
             case SDLK_DOWN:
-                // key down
-                _choice = --_choice < 0 ? _choice = ENTRY_NUM - 1 : _choice;
-
-                Mix_PlayChannel(-1, _ok, 0);
                 cout << _choice << endl;
                 break;
             case SDLK_x:
@@ -60,6 +82,7 @@ void MainMenu::logic()
     }
 
 }
+
 void MainMenu::start()
 {
     
@@ -69,7 +92,8 @@ void MainMenu::start()
         Mix_PlayMusic(_bgm, -1);
     }
     gTimer->start();
-    while (!_exit)
+    cout << "--------Main Menu Start-------" << endl;
+    while (!gKbdState->isExit())
     {
 
         logic();
@@ -79,9 +103,11 @@ void MainMenu::start()
             draw();
             gTimer->count();
             SDL_RenderPresent(gRenderer);
- 
         }
+        //SDL_Delay(10);
+        //cout << "main thread running" << endl;
     }
+    cout << "--------Main Menu End-------" << endl;
     gTimer->stop();
 
 
@@ -218,7 +244,8 @@ Stage* MainMenu::next(){
     switch (_choice)
     {
     case 0:
-        return (Stage*) new TutorialStage();
+//        return (Stage*) new TutorialStage();
+        return nullptr;
         break;
     default:
         return nullptr;

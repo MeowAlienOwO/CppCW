@@ -76,6 +76,8 @@
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\kbdListener.cpp" />
+    <ClCompile Include="src\kbdState.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MainMenu.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -89,8 +91,9 @@
     <ClInclude Include="src\Bullet.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\Global.h" />
-    <ClInclude Include="src\Header.h" />
     <ClInclude Include="src\Includes.h" />
+    <ClInclude Include="src\kbdListener.h" />
+    <ClInclude Include="src\kbdState.h" />
     <ClInclude Include="src\Macro.h" />
     <ClInclude Include="src\Main.h" />
     <ClInclude Include="src\MainMenu.h" />

@@ -15,7 +15,6 @@
  * MainMenu mainly contains what is needed in the main menu,
  * including the image/audio stuff and several entrances for different function,
  * like new game, etc.
-
  */
 
 class MainMenu : public Stage{

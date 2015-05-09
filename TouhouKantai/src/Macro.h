@@ -6,6 +6,17 @@
 #define MIN(a,b) ( ((a) < (b))? (a) : (b))
 #define MAX(a,b) ( ((a) > (b))? (a):(b))
 #define PI 3.1415926
+
+
+
+#define KEY_WATCHING_COUNT 7
+#define KEY_WATCHING_LSHIFT 0
+#define KEY_WATCHING_Z 1
+#define KEY_WATCHING_X 2
+#define KEY_WATCHING_UP 3
+#define KEY_WATCHING_DOWN 4
+#define KEY_WATCHING_LEFT 5
+#define KEY_WATCHING_RIGHT 6
 //const static int SCREEN_WIDTH  = 960;
 
 //const static int SCREEN_HEIGHT = 720;

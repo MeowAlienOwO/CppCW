@@ -267,6 +267,7 @@ void TutorialStage::handleKbdEvent()
                 break;
             case SDLK_x:
                 _player->spell();
+                break;
             case SDLK_LSHIFT:
                 _player->setFocusMod(true);
                 break;

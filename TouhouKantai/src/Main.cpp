@@ -8,26 +8,28 @@ SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 Timer* gTimer = NULL;
 Stage* stage = NULL;
-SDL_Thread* drawing = NULL;
-SDL_mutex* kbdLock = NULL;
-
-
+//SDL_Thread* drawing = NULL;
+SDL_Thread* listenKbd = NULL;
+kbdState* gKbdState = NULL;
+kbdListener* listener = NULL;
 SDL_mutex* Texture::_lock = NULL;
 SDL_Renderer* Texture::_renderer = NULL;
 
+int listening(void* data);
 int main(int argc, char *argv[])
 {
     // initialization
     if (!initialize()){
         return 1;
     }
+
     while (stage != nullptr)
     {
+        gKbdState->setExit(false);
         stage->start();
         Stage* temp = stage->next();
         delete stage;
         stage = temp;
-
     }
 
     finalize();
@@ -124,16 +126,12 @@ bool initialize()
     gTimer->start();
     //init stage
     stage = (Stage*) new MainMenu();
-    kbdLock = SDL_CreateMutex();
     
-    if (kbdLock == NULL)
-    {
-        cout << "Can't create Lock! Error: " << SDL_GetError() << endl;
-        return false;
-    }
-
-
-    //init drawing thread
+  
+    //init kbdlistening thread
+    gKbdState = new kbdState();
+    listener = new kbdListener(gKbdState);
+    //listenKbd = SDL_CreateThread(listening, "listening", (void*)NULL);
     cout << "-----Initialize finished-----" << endl;
     return true;
 }
@@ -143,11 +141,14 @@ bool initialize()
 void finalize(){
     cout << "-----Finalizing Game-----" << endl;
     //stop thread
-    cout << "-----Closing Drawing Process-----" << endl;
+    cout << "-----Closing Listening Process-----" << endl;
     SDL_DestroyMutex(Texture::getLock());
     Texture::setLock(NULL);
-
-    cout << "-----Drawing Process Closed-----" << endl;
+    /*int status;
+    SDL_WaitThread(listenKbd, &status);*/
+    delete listener;
+    delete gKbdState;
+    cout << "-----Listening Process Closed-----" << endl;
 
     // free texture and render
 
@@ -186,12 +187,17 @@ void finalize(){
     cout << "-----Game Closed-----" << endl;
 }
 
-
-int kbdListener(void* data)
+int listening(void* data)
 {
-
+    listener->start();
     return 0;
 }
+//
+//int kbdListener(void* data)
+//{
+//
+//    return 0;
+//}
 
 //int draw(void* data)
 //{
