@@ -5,7 +5,7 @@
 #include "Stage.h"
 #include "Player.h"
 #include "Enermy.h"
-
+#include "EnermyFactory.h"
 class TutorialStage: public Stage{
 
 public:
@@ -37,6 +37,7 @@ private:
     Texture* _panel;
     Texture* _enermy;
 
+
     SDL_Rect _panelArea;
     SDL_Rect _playerText;
     SDL_Rect _bombText;
@@ -48,6 +49,8 @@ private:
     int _mark;
     bool _tutorialExit;
     std::vector<Enermy*> _enermies;
+    std::vector<Bullet*> _bullets;
+    EnermyFactory* _enermyFactory;
     //bool* _judge;
 };
 #endif

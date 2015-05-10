@@ -118,30 +118,38 @@ void TutorialStage::logic()
         for (int i = 0; i < _enermies.size(); i++)
         {
             _enermies[i]->move();
-
-            for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
+            if (_enermies[i]->isAtEdge())
             {
-                Bullet* bullet =  _enermies[i]->_bullets[j];
-                bullet->move();
-                if (bullet->collide(_player))
+                delete _enermies[i];
+                _enermies.erase(_enermies.begin() + i);
+                break;
+            }
+            else {
+                for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
                 {
-                    cout << "hit player!" << endl;
-                    if (_player->hit())
+                    Bullet* bullet = _enermies[i]->_bullets[j];
+                    bullet->move();
+                    if (bullet->collide(_player))
                     {
-                        exit();
-                        cout << "player die!" << endl;
-                        break;
-                    }
-                    delete bullet;
+                        cout << "hit player!" << endl;
+                        if (_player->hit())
+                        {
+                            exit();
+                            cout << "player die!" << endl;
+                            break;
+                        }
+                        delete bullet;
 
-                    _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
+                        _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
+                    }
+                    else if (bullet->isAtEdge())
+                    {
+                        delete bullet;
+                        _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
+                    }
+
                 }
-                else if (bullet->isAtEdge())
-                {
-                    delete bullet;
-                    _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
-                }
-                
+
             }
             std::vector<Bullet*>(_enermies[i]->_bullets).swap(_enermies[i]->_bullets);
         }
@@ -241,15 +249,22 @@ bool TutorialStage::loadObject()
     cout << "-----Start Load Object-----" << endl;
     //player = *new Player(panelArea);
     _player = new Player(_panelArea);
+
     if (nullptr == _player)
     {
         return false;
     }
 
-    Enermy* enermy = new Enermy(_enermy, { 0, 256, 32, 56 },
-    { _panelArea.x + _panelArea.w / 2, _panelArea.y + _panelArea.h / 2 },
-    _panelArea);
-    _enermies.push_back(enermy);
+    _enermyFactory = new EnermyFactory(_enermy, _panelArea);
+    Enermy* enermy = _enermyFactory->createEnermy(LILYWHITE);
+    //Enermy* enermy = new Enermy(_enermy, { 0, 256, 32, 56 },
+    //{ _panelArea.x + _panelArea.w / 2, _panelArea.y + _panelArea.h / 2 },
+    //_panelArea);
+    if (enermy != NULL)
+    {
+
+        _enermies.push_back(enermy);
+    }
 
     //_judge = (bool*)malloc(sizeof(bool) * (_panelArea.w * _panelArea.h));
     cout << "-----Object Load Finished-----" << endl;
@@ -265,6 +280,7 @@ void TutorialStage::freeObject()
         delete _enermies[i];
         _enermies.erase(_enermies.begin() + i);
     }
+    delete _enermyFactory;
     //free(_judge);
     //_judge = NULL;
     cout << "-----Object Free Finished-----" << endl;
@@ -347,7 +363,6 @@ void TutorialStage::drawMark()
 
     string markStr;
     ostringstream sstream;
-    // change float to string && cut after two decimal numbers
     sstream << _mark;
     markStr = sstream.str();
     Texture* markText = new Texture("font/font.ttf", "Your Mark", { 0x00, 0x00, 0x00, 0xFF }, 64);
@@ -357,8 +372,7 @@ void TutorialStage::drawMark()
                             markText->getWidth(), 
                             markText->getHeight()
                         };
-    //printf("position:(%d,%d,%d,%d)\n", position.x, position.y, position.w, position.h);
-//    Texture* markText = new Texture()
+
     Texture* scoreBg = new Texture("img/score_bg.jpg");
     SDL_Rect screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
     scoreBg->render(NULL, &screenRect);
@@ -366,6 +380,7 @@ void TutorialStage::drawMark()
     markText->render(NULL, &markTextDest);
     cout << "render score text finished " << endl;
     delete markText;
+    markText = NULL;
     markText = new Texture("font/font.ttf", markStr, { 0x00, 0x00, 0x00, 0xFF }, 64);
     
     markTextDest = { SCREEN_WIDTH / 2 - markText->getWidth() / 2,
@@ -374,6 +389,16 @@ void TutorialStage::drawMark()
                             markText->getHeight()
                         };
 
+    markText->render(NULL, &markTextDest);
+    delete markText;
+    markText = NULL;
+    markText = new Texture("font/font.ttf", "Press Z to quit", { 0x00, 0x00, 0x00, 0xFF }, 64);
+    markTextDest = {
+        SCREEN_WIDTH - markText->getWidth() - 16,
+        SCREEN_HEIGHT - markText->getHeight() - 16,
+        markText->getWidth(),
+        markText->getHeight(),
+    };
     markText->render(NULL, &markTextDest);
     SDL_RenderPresent(gRenderer);
     SDL_Event e;
@@ -388,7 +413,7 @@ void TutorialStage::drawMark()
             }
             else if (e.type == SDL_KEYDOWN)
             {
-                if (e.key.keysym.sym == SDLK_q)
+                if (e.key.keysym.sym == SDLK_z)
                 {
                     quit = true;
                 }
@@ -402,7 +427,8 @@ void TutorialStage::handleKbdEvent()
 {
     SDL_Event e;
 
-    while (SDL_PollEvent(&e) != 0)
+    //while (SDL_PollEvent(&e) != 0)
+    if (SDL_PollEvent(&e) != 0)
     {
         // TODO: the solution still can't get rid of ups. using pushdown automata?
         if (e.type == SDL_QUIT)

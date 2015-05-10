@@ -3,7 +3,6 @@
 
 #include "GameObject.h"
 #include "Bullet.h"
-
 /*
  * class Enermy
  * represent enermy.
@@ -20,17 +19,18 @@ public:
 
     Enermy(Texture* texture, SDL_Rect src,
             SDL_Point start, SDL_Rect panel,
-         void (*logic)(Enermy* e, int state) = NULL);
-    ~Enermy();
 
+         void (*logic)(Enermy* e) = NULL);
+    ~Enermy();
+    
+    int _state;
     std::vector<Bullet*> _bullets;
 private:
     Texture* _texture;
     SDL_Rect _src;
-    Uint8 _state;
-    void(*_logic)(Enermy* e, int state);
+    void(*_logic)(Enermy* e);
 
 };
 
-void defaultLogic(Enermy* e, int state);
+void defaultLogic(Enermy* e);
 #endif

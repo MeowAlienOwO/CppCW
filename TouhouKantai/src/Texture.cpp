@@ -3,9 +3,7 @@ using namespace std;
 
 Texture::Texture(std::string path)
 {
-
     _texture = loadTexture(path);
-
 }
 
 Texture::Texture(std::string ttf, std::string str, SDL_Color color, int size)

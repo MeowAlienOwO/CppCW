@@ -1,12 +1,17 @@
 #include "Enermy.h"
 using namespace std;
 
-Enermy::Enermy(Texture* texture, SDL_Rect src, SDL_Point start, SDL_Rect panel, void (*logic)(Enermy* e, int state))
+Enermy::Enermy(Texture* texture, SDL_Rect src, SDL_Point start, 
+    SDL_Rect panel, 
+    void (*logic)(Enermy* e))
     : GameObject({ start.x, start.y, src.w, src.h }, 2, panel)
 {
+    cout << "init enermy" << endl;
     _texture = texture;
     _src = src;
     _state = 0;
+
+    cout << "logic = " << logic << endl;
     _logic = logic == NULL? defaultLogic : logic;
 }
 
@@ -20,7 +25,7 @@ Enermy::~Enermy()
 
 void Enermy::move()
 {
-    _logic(this, _state);
+    _logic(this);
 }
 
 void Enermy::draw()
@@ -50,11 +55,11 @@ std::string Enermy::getType()
 }
 
 
-void defaultLogic(Enermy* e, int state)
+void defaultLogic(Enermy* e)
 {
     static int count = gTimer->frameNo();
     int c = gTimer->frameNo();
-    if (c - count >240 )
+    if (c - count > 240)
     {
         count = c;
         e->attack();
