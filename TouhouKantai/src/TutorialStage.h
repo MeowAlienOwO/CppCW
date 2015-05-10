@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Enermy.h"
 #include "EnermyFactory.h"
+#include "Bullet.h"
 class TutorialStage: public Stage{
 
 public:
@@ -49,6 +50,7 @@ private:
     int _mark;
     bool _tutorialExit;
     std::vector<Enermy*> _enermies;
+    //std::vector<Bullet*>* _bullets;
     std::vector<Bullet*> _bullets;
     EnermyFactory* _enermyFactory;
     //bool* _judge;

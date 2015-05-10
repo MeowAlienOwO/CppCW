@@ -11,9 +11,14 @@ public:
             double angle = PI / 2, 
             void (*logic)(Bullet* bullet) = NULL);
     ~Bullet();
+
     virtual void move();
+    void defaultMove();
+    GameObject* getTarget();
+    GameObject* getFrom();
     void draw();
     void setAngle(double angle);
+    void setAccelerate(double ax, double ay); 
     double getAngle();
     std::string getType();
     int _state;
@@ -23,6 +28,8 @@ private:
     GameObject* _target;
     GameObject* _from;
     double _angle;
+    double _ax;
+    double _ay;
     void(*_logic)(Bullet* bullet);
 };
 

@@ -3,21 +3,24 @@
 
 #include "Global.h"
 #include "Macro.h"
-
+#include "Player.h"
 #include "Enermy.h"
 
-typedef enum{
+enum EnermyType{
     LILYWHITE, CHIRNO
-} EnermyType;
+};
 class EnermyFactory{
 public:
     Enermy* createEnermy(EnermyType type);
 
-    EnermyFactory(Texture* texture, SDL_Rect panel);
+    EnermyFactory(Texture* texture, SDL_Rect panel, Player* player, std::vector<Bullet*>* bullets);
 private:
     Texture* _texture;
     SDL_Rect _panel;
+    std::vector<Bullet*>* _bullets;
 };
+
+
 
 
 #endif

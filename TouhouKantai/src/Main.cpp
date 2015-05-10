@@ -1,5 +1,4 @@
 #include "Main.h"
-#include "MainMenu.h"
 
 
 using namespace std;
@@ -11,9 +10,10 @@ Stage* stage = NULL;
 SDL_Thread* drawing = NULL;
 SDL_mutex* kbdLock = NULL;
 
-
 SDL_mutex* Texture::_lock = NULL;
 SDL_Renderer* Texture::_renderer = NULL;
+
+
 
 int main(int argc, char *argv[])
 {

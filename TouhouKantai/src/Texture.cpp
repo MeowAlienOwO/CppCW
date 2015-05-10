@@ -9,28 +9,28 @@ Texture::Texture(std::string path)
 Texture::Texture(std::string ttf, std::string str, SDL_Color color, int size)
 {
 
-    cout << "loading text texture!" << endl;
-    cout << "loading font" << endl;
+    //cout << "loading text texture!" << endl;
+    ///cout << "loading font" << endl;
     TTF_Font* font = TTF_OpenFont(ttf.c_str(), size);
     if (font == NULL)
     {
         cout << "font not loaded\nError: " << TTF_GetError() << endl;
         throw new exception("font not loaded");
     }
-    cout << "loading font finished" << endl;
-    cout << "createing surface" << endl;
+    //cout << "loading font finished" << endl;
+    //cout << "createing surface" << endl;
     SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), color);
-    cout << "surface closed" << endl;
+    //cout << "surface closed" << endl;
     if (surface == NULL)
     {
         cout << "can't create surface!Error: " << SDL_GetError() << endl;
     }
     w = surface->w;
     h = surface->h;
-    cout << "changing to texture!" << endl;
+    //cout << "changing to texture!" << endl;
     _texture = SDL_CreateTextureFromSurface(Texture::_renderer, surface);
 
-    cout << "texture changing finished!" << endl;
+    //cout << "texture changing finished!" << endl;
     SDL_FreeSurface(surface);
     TTF_CloseFont(font);
 }
@@ -99,9 +99,9 @@ SDL_Surface* Texture::loadSurface(std::string path)
 {
     SDL_Surface* loaded = NULL;
 
-    cout << "image loading..." << endl;
+    //cout << "image loading..." << endl;
     loaded = IMG_Load(path.c_str());
-    cout << "image loading finished" << endl;
+    //cout << "image loading finished" << endl;
 
     if (loaded == NULL)
     {

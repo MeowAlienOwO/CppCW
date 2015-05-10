@@ -2,6 +2,9 @@
 #define MAIN_H
 
 #include "Global.h"
+
+#include "MainMenu.h"
+#include "BulletFactory.h"
 /*
  * Author: Zhang Huayan
  * ID: 6511043

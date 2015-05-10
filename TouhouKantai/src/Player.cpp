@@ -117,6 +117,7 @@ void Player::attack()
 {
     //cout << "attack!" << endl;
     Bullet* bullet = new Bullet(_texture, { 128, 0, 16, 16 }, this, NULL, getPanel(),getCenter(), (M_PI * 3) / 2);
+    bullet->setSpeed(4.5);
     _bullets.push_back(bullet);
 //    cout << "start at: (" << getCenter().x << "," << getCenter().y << ")" << endl;
 //    cout << "player rect: (" << getX() << "," << getY() << "," << getW() << "," << getH() << ")" << endl;

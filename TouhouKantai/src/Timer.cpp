@@ -70,9 +70,9 @@ void Timer::count()
 {
     //currFps = 1.0 / (currTime - lastTime) * 1000;
     //lastTime = currTime;
-    countedFrame++;
     //cout << "counted frame:" << countedFrame << endl;
 
+    countedFrame++;
     //cout << "curr time:" << countedFrame << endl;
     if (currFps > 2000000)
     {

@@ -45,7 +45,9 @@ bool TutorialStage::initialize()
 
 void TutorialStage::draw()
 {
+    drawPanel();
     _player->draw();
+
 
     for (int i = 0; i < _player->_bullets.size(); i++)
     {
@@ -55,10 +57,14 @@ void TutorialStage::draw()
     for (int i = 0; i < _enermies.size(); i++)
     {
         _enermies[i]->draw();
-        for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
-        {
-            _enermies[i]->_bullets[j]->draw();
-        }
+        //for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
+        //{
+        //    _enermies[i]->_bullets[j]->draw();
+        //}
+    }
+    for (int i = 0; i < _bullets.size(); i++)
+    {
+        _bullets[i]->draw();
     }
  
     drawBackground();
@@ -76,86 +82,77 @@ void TutorialStage::finalize()
 
 void TutorialStage::logic()
 {
-    if (gTimer->isFrame())
+    //if (gTimer->isFrame())
+    //{
+
+    handleKbdEvent();
+    _player->move();
+
+    for (int i = 0; i < _player->_bullets.size(); i++)
     {
-
-        handleKbdEvent();
-        _player->move();
-
-        for (int i = 0; i < _player->_bullets.size(); i++)
+        Bullet* bullet = _player->_bullets[i];
+        bullet->move();
+        if (_player->_bullets[i]->isAtEdge())
         {
-            Bullet* bullet = _player->_bullets[i];
-            bullet->move();
-            if (_player->_bullets[i]->isAtEdge())
+            delete _player->_bullets[i];
+            _player->_bullets.erase(_player->_bullets.begin() + i);
+            break;
+        }
+        else
+        {
+            for (int j = 0; j < _enermies.size(); j++)
             {
-                delete _player->_bullets[i];
-                _player->_bullets.erase(_player->_bullets.begin() + i);
-                break;
-            }
-            else
-            {
-                for (int j = 0; j < _enermies.size(); j++)
+                Enermy* enermy = _enermies[j];
+                if (bullet->collide(enermy))
                 {
-                    Enermy* enermy = _enermies[j];
-                    if (bullet->collide(enermy))
-                    {
-                        cout << "hit enermy!" << endl;
-                        delete enermy;
-                        _enermies.erase(_enermies.begin() + j);
-                        delete bullet;
-                        _player->_bullets.erase(_player->_bullets.begin() + i);
-                        _mark += 10;
-                        break;
-                    }
+                    cout << "hit enermy!" << endl;
+                    delete enermy;
+                    _enermies.erase(_enermies.begin() + j);
+                    delete bullet;
+                    _player->_bullets.erase(_player->_bullets.begin() + i);
+                    _mark += 10;
+                    break;
                 }
             }
         }
+    }
 
-        // reduce the extra space
-        std::vector<Bullet*>(_player->_bullets).swap(_player->_bullets);
-        std::vector<Enermy*>(_enermies).swap(_enermies);
-
-        for (int i = 0; i < _enermies.size(); i++)
+    for (int i = 0; i < _enermies.size(); i++)
+    {
+        _enermies[i]->move();
+        if (_enermies[i]->isAtEdge())
         {
-            _enermies[i]->move();
-            if (_enermies[i]->isAtEdge())
+            delete _enermies[i];
+            _enermies.erase(_enermies.begin() + i);
+            break;
+        }
+
+    }
+
+    for (int i = 0; i < _bullets.size(); i++)
+    {
+        Bullet* bullet = _bullets[i];
+        bullet->move();
+        if (bullet->collide(_player))
+        {
+            delete bullet;
+            _bullets.erase(_bullets.begin() + i);
+            if (_player->hit())
             {
-                delete _enermies[i];
-                _enermies.erase(_enermies.begin() + i);
+                exit();
+                cout << "player died!" << endl;
                 break;
             }
-            else {
-                for (int j = 0; j < _enermies[i]->_bullets.size(); j++)
-                {
-                    Bullet* bullet = _enermies[i]->_bullets[j];
-                    bullet->move();
-                    if (bullet->collide(_player))
-                    {
-                        cout << "hit player!" << endl;
-                        if (_player->hit())
-                        {
-                            exit();
-                            cout << "player die!" << endl;
-                            break;
-                        }
-                        delete bullet;
-
-                        _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
-                    }
-                    else if (bullet->isAtEdge())
-                    {
-                        delete bullet;
-                        _enermies[i]->_bullets.erase(_enermies[i]->_bullets.begin() + j);
-                    }
-
-                }
-
-            }
-            std::vector<Bullet*>(_enermies[i]->_bullets).swap(_enermies[i]->_bullets);
         }
+        else if (bullet->isAtEdge())
+        {
+            delete bullet;
+            _bullets.erase(_bullets.begin() + i);
+        }
+    }
 
         //cout << "move " << " (" << _player->getX() << "," << _player->getY() << ")" << endl;
-    }
+    //}
 
 
 }
@@ -170,9 +167,10 @@ void TutorialStage::start()
         //std::this_thread::sleep_for(std::chrono::milliseconds(10));
         //std::this_thread::sleep_for(std::chrono::microseconds(1));
         //SDL_Delay(1);
-        logic();
         if (gTimer->isFrame())
         {
+
+            logic();
             SDL_RenderClear(gRenderer);
             draw();
             gTimer->renderFPS();
@@ -254,10 +252,11 @@ bool TutorialStage::loadObject()
     {
         return false;
     }
-
-    _enermyFactory = new EnermyFactory(_enermy, _panelArea);
+    //std::vector<Bullet*> bullets;
+    //_bullets = &bullets;
+    _enermyFactory = new EnermyFactory(_enermy, _panelArea, _player, &_bullets);
     Enermy* enermy = _enermyFactory->createEnermy(LILYWHITE);
-    //Enermy* enermy = new Enermy(_enermy, { 0, 256, 32, 56 },
+    //enermy = new Enermy(_enermy, { 0, 256, 32, 56 },
     //{ _panelArea.x + _panelArea.w / 2, _panelArea.y + _panelArea.h / 2 },
     //_panelArea);
     if (enermy != NULL)
@@ -265,7 +264,19 @@ bool TutorialStage::loadObject()
 
         _enermies.push_back(enermy);
     }
+    //enermy = new Enermy(_enermy, { 0, 256, 32, 56 },
+    //{ _panelArea.x + _panelArea.w / 2, _panelArea.y + _panelArea.h / 2 },
+    //_panelArea, &_bullets);
+    //if (enermy != NULL)
+    //{
 
+    //    _enermies.push_back(enermy);
+    //}
+    enermy = _enermyFactory->createEnermy(CHIRNO);
+    if (enermy != NULL)
+    {
+        _enermies.push_back(enermy);
+    }
     //_judge = (bool*)malloc(sizeof(bool) * (_panelArea.w * _panelArea.h));
     cout << "-----Object Load Finished-----" << endl;
     return true;
@@ -281,6 +292,12 @@ void TutorialStage::freeObject()
         _enermies.erase(_enermies.begin() + i);
     }
     delete _enermyFactory;
+
+    for (int i = 0; i < _bullets.size(); i++)
+    {
+        delete _bullets[i];
+        _bullets.erase(_bullets.begin() + i);
+    }
     //free(_judge);
     //_judge = NULL;
     cout << "-----Object Free Finished-----" << endl;
@@ -324,7 +341,7 @@ void TutorialStage::drawBackground()
 
     for (int i = 0; i < _player->getHP(); i++)
     {
-        cout << "drawing hp star" << endl;
+        //cout << "drawing hp star" << endl;
         _background->render(&_playerStar, &_playerStarDest);
         _playerStarDest.x += _playerStar.w;
     }
@@ -337,24 +354,38 @@ void TutorialStage::drawBackground()
 void TutorialStage::drawPanel()
 {
 
-    static SDL_Rect panelBgDest = {_panelArea.x, _panelArea.y - 960, _panelArea.w, 960};
+    //static SDL_Rect panelBgDestFst = {_panelArea.x, _panelArea.y - 960, _panelArea.w, 960};
+    //static SDL_Rect panelBgDestSnd = { _panelArea.x, _panelArea.y, _panelArea.w, 960 };
     static int count = 0;
+    static SDL_Rect panelBgDestFst = { _panelArea.x, _panelArea.y, _panelArea.w, _panelArea.h };
+    static SDL_Rect panelBgDestSnd = { _panelArea.x, _panelArea.y + _panelArea.h, _panelArea.w, _panelArea.h };
     SDL_Rect panelBgSrc = { 0, 0, 256, 256 };
     SDL_Rect panelTreeSrcL = { 256, 0, 128, 256 };
     SDL_Rect panelTreeSrcR = { 384, 0, 128, 256 };
-    
-    if (panelBgDest.y + panelBgDest.h + 1 < (_panelArea.y + _panelArea.h))
+   /* 
+    if (panelBgDestFst.y + panelBgDest.h < (_panelArea.y + _panelArea.h))
     {
-        panelBgDest.y = _panelArea.y;
+        panelBgDest.y = _panelArea.y - 16;
 
+    }*/
+    if (panelBgDestFst.y + panelBgDestFst.h <= _panelArea.y)
+    {
+        panelBgDestFst.y = panelBgDestSnd.y + panelBgDestSnd.h;
+        //panelBgDestSnd.y--;
+    }
+    else if (panelBgDestSnd.y + panelBgDestSnd.h <= _panelArea.y)
+    {
+        panelBgDestSnd.y = panelBgDestFst.y + panelBgDestFst.h;
+        //panelBgDestFst.y--;
     }
     else if (count = (++count %100) )
     {
-        panelBgDest.y -- ;
+        panelBgDestFst.y--;
+        panelBgDestSnd.y--;
     }
-    
-    _panel->render(&panelBgSrc, &panelBgDest);
-  
+     
+    _panel->render(&panelBgSrc, &panelBgDestFst);
+    _panel->render(&panelBgSrc, &panelBgDestSnd);
 }
 
 void TutorialStage::drawMark()
@@ -430,7 +461,6 @@ void TutorialStage::handleKbdEvent()
     //while (SDL_PollEvent(&e) != 0)
     if (SDL_PollEvent(&e) != 0)
     {
-        // TODO: the solution still can't get rid of ups. using pushdown automata?
         if (e.type == SDL_QUIT)
         {
             exit();
@@ -478,6 +508,7 @@ void TutorialStage::handleKbdEvent()
             {
             case SDLK_LSHIFT:
                 _player->setFocusMod(false);
+                break;
             case SDLK_UP:
                 _player->setDirection(HERE);
                 break;
